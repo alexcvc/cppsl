@@ -1,0 +1,24 @@
+[submodule "doctest"]
+	path = external/doctest
+	url = https://github.com/onqtam/doctest.git
+	branch = master
+[submodule "gsl"]
+	path = external/gsl
+	url = git@github.com:microsoft/GSL.git
+	branch = main
+[submodule "gsl-lite"]
+	path = external/gsl-lite
+	url = git@github.com:gsl-lite/gsl-lite.git
+	branch = master
+[submodule "spdlog"]
+	path = external/spdlog
+	url = git@github.com:gabime/spdlog.git
+	branch = master
+[submodule "pugixml"]
+	path = external/pugixml
+	url = git@github.com:zeux/pugixml.git
+	branch = master
+[submodule "nlohmann_json"]
+	path = external/nlohman_json
+	url = git@github.com:nlohmann/json.git
+	branch = master

@@ -1,6 +1,6 @@
 
 .PHONY: submodules
-submodules: doctest gsl gsl-light spdlog pugixml nlohmann_json
+submodules: doctest gsl gsl-lite spdlog pugixml nlohmann_json
 
 .PHONY: doctest
 doctest:

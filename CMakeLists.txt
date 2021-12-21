@@ -39,8 +39,9 @@ endif ()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Disable C and C++ compiler extensions.
-set(CMAKE_C_EXTENSIONS OFF)
-set(CMAKE_CXX_EXTENSIONS OFF)
+#set(CMAKE_CXX_STANDARD 20)
+#set(CMAKE_C_EXTENSIONS OFF)
+#set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Add packages
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -71,11 +72,12 @@ if (NOT CMAKE_CONFIGURATION_TYPES)
 endif ()
 
 ### Compile external.
-set(Doctest_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/doctest)
-set(Spdlog_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/spdlog/include)
-set(Fmt_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/fmt/include)
-set(Gsl_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/gsl/include)
-set(GslLite_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/gsl-lite/include)
+set(doctest_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/doctest)
+set(GSL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/gsl/include)
+set(gsl_lite_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/gsl-lite/include)
+set(nlohman_json_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/nlohman_json/include)
+set(pugixml_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/pugixml/src)
+set(spdlog_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/spdlog/include)
 
 add_subdirectory(external)
 
@@ -106,9 +108,9 @@ if (BUILD_TESTING)
 endif ()
 
 # Add examples?
-#if (BUILD_EXAMPLES)
-#    add_subdirectory(examples)
-#endif ()
+if (BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif ()
 
 # Add targets related to doxygen documentation generation
 add_subdirectory(doc)
