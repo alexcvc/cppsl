@@ -1,86 +1,114 @@
-cmake_minimum_required(VERSION 3.15)
+##
+# CMakefile.txt: CMakeLists.txt
+# Project: Template
+# Date: 2021-12-16
+# Author: <YOUR NAME>
+# Notes:
+##
 
-# Set the project name to your project name, my project isn't very descriptive
-project(myproject CXX)
-include(cmake/StandardProjectSettings.cmake)
-include(cmake/PreventInSourceBuilds.cmake)
+cmake_minimum_required(VERSION 3.5)
 
-# Link this 'library' to set the c++ standard / compile-time options requested
-add_library(project_options INTERFACE)
-target_compile_features(project_options INTERFACE cxx_std_17)
+# Set the PROJECT_NAME, PROJECT_VERSION as well as other variable
+project(your_lib
+        LANGUAGES CXX C
+        VERSION 1.0.0.0)
 
-if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
-  option(ENABLE_BUILD_WITH_TIME_TRACE "Enable -ftime-trace to generate time tracing .json files on clang" OFF)
-  if(ENABLE_BUILD_WITH_TIME_TRACE)
-    target_compile_options(project_options INTERFACE -ftime-trace)
-  endif()
-endif()
+# Defines the CMAKE_INSTALL_LIBDIR, CMAKE_INSTALL_BINDIR and many other useful macros.
+# See https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+include(CMakeDependentOption)
+include(CTest)
 
-# Link this 'library' to use the warnings specified in CompilerWarnings.cmake
-add_library(project_warnings INTERFACE)
+# Control where libraries and executables are placed during the build.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
 
-# enable cache system
-include(cmake/Cache.cmake)
+# Under MSVC, we set CMAKE_DEBUG_POSTFIX to "d" to add a trailing "d" to library
+# built in debug mode.
+if (MSVC)
+    set(CMAKE_DEBUG_POSTFIX "d")
+endif ()
 
-# Add linker configuration
-include(cmake/Linker.cmake)
-configure_linker(project_options)
+# Build Position Independent Code (PIC).
+# Linking a static library that is not built with PIC from a shared
+# library will fail on some compiler/architecture combinations.
+# Further details on PIC can be found here:
+# https://eli.thegreenplace.net/2011/11/03/position-independent-code-pic-in-shared-libraries/
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# standard compiler warnings
-include(cmake/CompilerWarnings.cmake)
-set_project_warnings(project_warnings)
+# Disable C and C++ compiler extensions.
+set(CMAKE_C_EXTENSIONS OFF)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# sanitizer options if supported by compiler
-include(cmake/Sanitizers.cmake)
-enable_sanitizers(project_options)
+# Add packages
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-# enable doxygen
-include(cmake/Doxygen.cmake)
-enable_doxygen()
+### Options
+option(BUILD_SHARED_LIBS "Build libraries as shared as opposed to static" ON)
+option(BUILD_TESTING "Create tests using CMake" OFF)
+option(BUILD_EXAMPLES "Build examples using CMake" ON)
 
-# allow for static analysis options
-include(cmake/StaticAnalyzers.cmake)
+# Build test related commands?
+if (BUILD_TESTING)
+    enable_testing()
+endif ()
 
-option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" OFF)
-option(ENABLE_TESTING "Enable Test Builds" ON)
-option(ENABLE_FUZZING "Enable Fuzzing Builds" OFF)
+# Enable RPATH support for installed binaries and libraries
+include(AddInstallRPATHSupport)
+add_install_rpath_support(BIN_DIRS "${CMAKE_INSTALL_FULL_BINDIR}"
+        LIB_DIRS "${CMAKE_INSTALL_FULL_LIBDIR}"
+        INSTALL_NAME_DIR "${CMAKE_INSTALL_FULL_LIBDIR}"
+        USE_LINK_PATH)
 
-# Very basic PCH example
-option(ENABLE_PCH "Enable Precompiled Headers" OFF)
-if(ENABLE_PCH)
-  # This sets a global PCH parameter, each project will build its own PCH, which is a good idea if any #define's change
-  #
-  # consider breaking this out per project as necessary
-  target_precompile_headers(
-    project_options
-    INTERFACE
-    <vector>
-    <string>
-    <map>
-    <utility>)
-endif()
+# Encourage user to specify a build type (e.g. Release, Debug, etc.), otherwise set it to Release.
+if (NOT CMAKE_CONFIGURATION_TYPES)
+    if (NOT CMAKE_BUILD_TYPE)
+        message(STATUS "Setting build type to 'Release' as none was specified.")
+        set_property(CACHE CMAKE_BUILD_TYPE PROPERTY VALUE "Release")
+    endif ()
+endif ()
 
-option(ENABLE_CONAN "Use Conan for dependency management" ON)
-if(ENABLE_CONAN)
-  include(cmake/Conan.cmake)
-  run_conan()
-endif()
+### Compile external.
+set(Doctest_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/doctest)
+set(Spdlog_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/spdlog/include)
+set(Fmt_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/fmt/include)
+set(Gsl_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/gsl/include)
+set(GslLite_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/gsl-lite/include)
 
-if(ENABLE_TESTING)
-  enable_testing()
-  message("Building Tests. Be sure to check out test/constexpr_tests for constexpr testing")
-  add_subdirectory(test)
-endif()
+add_subdirectory(external)
 
-if(ENABLE_FUZZING)
-  message("Building Fuzz Tests, using fuzzing sanitizer https://www.llvm.org/docs/LibFuzzer.html")
-  add_subdirectory(fuzz_test)
-endif()
-
+### Compile- and install-related commands.
 add_subdirectory(src)
 
-option(ENABLE_UNITY "Enable Unity builds of projects" OFF)
-if(ENABLE_UNITY)
-  # Add for any project you want to apply unity builds for
-  set_target_properties(intro PROPERTIES UNITY_BUILD ON)
-endif()
+# Create and install CMake configuration files for your project that are
+# necessary to for other projects to call find_package(your_lib).
+# install_basic_package_files() comes with many input parameters to customize
+# the configuration files. The parameters used in the following call provide
+# basic versions of CMake configuration files.
+# See install_basic_package_files() documentation found in ./cmake folder.
+#
+# Note that if your library depends from other libraries, you are probably
+# required to used the install_basic_package_files() DEPENDENCIES option.
+include(InstallBasicPackageFiles)
+install_basic_package_files(${PROJECT_NAME}
+        VERSION ${${PROJECT_NAME}_VERSION}
+        COMPATIBILITY AnyNewerVersion
+        VARS_PREFIX ${PROJECT_NAME}
+        NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+# Add the uninstall target
+include(AddUninstallTarget)
+
+# Add integration tests (unit tests for each library should be in each subdirectory).
+if (BUILD_TESTING)
+    add_subdirectory(test)
+endif ()
+
+# Add examples?
+#if (BUILD_EXAMPLES)
+#    add_subdirectory(examples)
+#endif ()
+
+# Add targets related to doxygen documentation generation
+add_subdirectory(doc)

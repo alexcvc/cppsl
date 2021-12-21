@@ -1,7 +1,9 @@
----
-Checks:          '*,-fuchsia-*,-google-*,-zircon-*,-abseil-*,-modernize-use-trailing-return-type,-llvm*'
+Checks:          '*,
+                  -fuchsia-default-arguments-calls,
+                  -modernize-use-trailing-return-type,
+                  -cppcoreguidelines-owning-memory,
+                  -abseil-*,
+                  -llvmlibc-*'
 WarningsAsErrors: ''
 HeaderFilterRegex: ''
-FormatStyle:     none
-
-
+AnalyzeTemporaryDtors: false
