@@ -1,11 +1,11 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include <iostream>
-#include <fmt/format.h>
 #include <cstring>
 #include <compare>
 #include <doctest/doctest.h>
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 using namespace std;
 
@@ -85,6 +85,7 @@ TEST_CASE("C++ string comparing") {
       if (result > 0) { cout << "greater" << endl; }
       if (result == 0) { cout << "equal" << endl; }
    }
+
 
    {
       // C++20 three-way comparison operator

@@ -39,9 +39,9 @@ endif ()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Disable C and C++ compiler extensions.
-#set(CMAKE_CXX_STANDARD 20)
-#set(CMAKE_C_EXTENSIONS OFF)
-#set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_C_EXTENSIONS OFF)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Add packages
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -77,6 +77,7 @@ set(GSL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/gsl/include)
 set(gsl_lite_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/gsl-lite/include)
 set(nlohman_json_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/nlohman_json/include)
 set(pugixml_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/pugixml/src)
+set(fmt_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/fmt/fmt)
 set(spdlog_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/spdlog/include)
 
 add_subdirectory(external)
