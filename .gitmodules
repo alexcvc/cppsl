@@ -22,3 +22,11 @@
 	path = external/nlohman_json
 	url = git@github.com:nlohmann/json.git
 	branch = master
+[submodule "cxxopts"]
+	path = external/cxxopts
+	url = https://github.com/jarro2783/cxxopts
+	branch = master
+[submodule "fmt"]
+	path = external/fmt
+	url = git@github.com:fmtlib/fmt.git
+	branch = master

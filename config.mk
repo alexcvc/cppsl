@@ -1,6 +1,6 @@
 
 .PHONY: submodules
-submodules: doctest gsl gsl-lite spdlog pugixml nlohmann_json
+submodules: doctest gsl gsl-lite spdlog pugixml nlohmann_json cxxopts
 
 .PHONY: doctest
 doctest:
@@ -30,6 +30,16 @@ pugixml:
 .PHONY: nlohmann_json
 nlohmann_json:
 	git submodule add -b master --name nlohmann_json git@github.com:nlohmann/json.git external/nlohman_json
+	git submodule update --init
+
+.PHONY: cxxopts
+cxxopts:
+	git submodule add -b master --name cxxopts https://github.com/jarro2783/cxxopts external/cxxopts
+	git submodule update --init
+
+.PHONY: fmt
+fmt:
+	git submodule add -b master --name fmt git@github.com:fmtlib/fmt.git external/fmt
 	git submodule update --init
 
 .PHONY: clean
