@@ -9,7 +9,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 # Set the PROJECT_NAME, PROJECT_VERSION as well as other variable
-project(your_lib
+project(cppsl
         LANGUAGES CXX C
         VERSION 1.0.0.0)
 
@@ -71,6 +71,8 @@ if (NOT CMAKE_CONFIGURATION_TYPES)
     endif ()
 endif ()
 
+set(cppsl_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
+
 ### Compile external.
 set(doctest_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/doctest)
 set(GSL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/gsl/include)
@@ -86,7 +88,7 @@ add_subdirectory(external)
 add_subdirectory(src)
 
 # Create and install CMake configuration files for your project that are
-# necessary to for other projects to call find_package(your_lib).
+# necessary to for other projects to call find_package(cppsl).
 # install_basic_package_files() comes with many input parameters to customize
 # the configuration files. The parameters used in the following call provide
 # basic versions of CMake configuration files.

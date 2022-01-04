@@ -1,8 +1,8 @@
-set(EXE_TARGET_NAME example_use_lib_header_only)
+set(EXE_TARGET_NAME example_byteswap)
 
 set(${EXE_TARGET_NAME}_SRC
         main.cpp
-)
+        )
 
 add_executable(${EXE_TARGET_NAME} ${${EXE_TARGET_NAME}_SRC})
 

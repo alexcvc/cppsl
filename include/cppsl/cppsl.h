@@ -1,18 +1,20 @@
-#ifndef ABDFA2BC_B3C6_4AC3_ACE5_B074B2582347
-#define ABDFA2BC_B3C6_4AC3_ACE5_B074B2582347
 
 /**
- * \ingroup your_lib_namespace
+ * \ingroup cppsl_namespace
  *
- * your_lib namespace.
+ * cppsl namespace.
  */
-namespace your_lib {
+
+#ifndef C1245BD2_B671_4EF8_82F7_CB1BD24AACB1
+#define C1245BD2_B671_4EF8_82F7_CB1BD24AACB1
+
+namespace cppsl {
 
 /**
- * @class your_lib::summationClass
- * @headerfile your_lib.h <your_lib/your_lib.h>
+ * @class cppsl::summationClass
+ * @headerfile cppsl.h <cppsl/cppsl.h>
  *
- * @brief A class from your_lib namespace.
+ * @brief A class from cppsl namespace.
  *
  * This class does a summation.
  */
@@ -37,10 +39,10 @@ public:
 
 
 /**
- * @class your_lib::differenceClass
- * @headerfile your_lib.h <your_lib/your_lib.h>
+ * @class cppsl::differenceClass
+ * @headerfile cppsl.h <cppsl/cppsl.h>
  *
- * @brief A derived class from your_lib namespace.
+ * @brief A derived class from cppsl namespace.
  *
  * This class performs a difference.
  */
@@ -64,6 +66,6 @@ public:
 };
 
 
-} // namespace your_lib
+} // namespace cppsl
 
-#endif /* ABDFA2BC_B3C6_4AC3_ACE5_B074B2582347 */
+#endif /* C1245BD2_B671_4EF8_82F7_CB1BD24AACB1 */

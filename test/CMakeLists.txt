@@ -1,4 +1,4 @@
 add_subdirectory(test_doctest)
 add_subdirectory(test_strings)
-add_subdirectory(test_your_lib)
-add_subdirectory(test_your_lib_header_only)
+add_subdirectory(test_cppsl)
+add_subdirectory(test_cppsl_header_only)

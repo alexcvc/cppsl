@@ -1,5 +1,5 @@
 ##
-# CMakefile.txt: src/your_lib_header_only/CMakeLists.txt
+# CMakefile.txt: src/cppsl_header_only/CMakeLists.txt
 # Project:
 # Date: 2021-12-16
 # Author:
@@ -10,7 +10,9 @@
 set(LIBRARY_TARGET_NAME ${PROJECT_NAME}_header_only)
 
 # List of header library files.
-set(${LIBRARY_TARGET_NAME}_HDR "include/your_lib_header_only/your_lib_header_only.h")
+set(${LIBRARY_TARGET_NAME}_HDR
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../include/cppsl/cppsl_header_only.h
+        )
 
 # You can add an external dependency using the find_package() function call
 # See: https://cmake.org/cmake/help/latest/command/find_package.html
@@ -35,7 +37,7 @@ set(${LIBRARY_TARGET_NAME}_HDR "include/your_lib_header_only/your_lib_header_onl
 add_library(${LIBRARY_TARGET_NAME} INTERFACE)
 
 # Within this project, you can link to this library by just specifing the name
-# of the target, i.e. ${LIBRARY_TARGET_NAME} = your_lib_header_only. It is
+# of the target, i.e. ${LIBRARY_TARGET_NAME} = cppsl_header_only. It is
 # useful, however, to define an alias of this library with the scope of the
 # exported library itself because (1) you will link against it with the exact
 # same syntax of an imported library and (2) because names having a double-colon
@@ -46,8 +48,9 @@ add_library(${PROJECT_NAME}::${LIBRARY_TARGET_NAME} ALIAS ${LIBRARY_TARGET_NAME}
 # Specify include directories for both compilation and installation process.
 # The $<INSTALL_PREFIX> generator expression is useful to ensure to create
 # relocatable configuration files, see https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html#creating-relocatable-packages
-target_include_directories(${LIBRARY_TARGET_NAME} INTERFACE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-                                                            "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
+target_include_directories(${LIBRARY_TARGET_NAME} INTERFACE
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../include>"
+        "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
 
 # If you used find_package() you need to use target_include_directories() and/or
 # target_link_libraries(). As explained previously, depending on the imported
@@ -60,7 +63,7 @@ target_include_directories(${LIBRARY_TARGET_NAME} INTERFACE "$<BUILD_INTERFACE:$
 
 # Specify installation targets, typology and destination folders.
 install(TARGETS ${LIBRARY_TARGET_NAME}
-        EXPORT  ${PROJECT_NAME})
+        EXPORT ${PROJECT_NAME})
 
 install(FILES ${${LIBRARY_TARGET_NAME}_HDR}
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${LIBRARY_TARGET_NAME}")

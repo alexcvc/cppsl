@@ -6,7 +6,7 @@
 # Notes:
 ##
 
-add_subdirectory(your_lib)
-add_subdirectory(your_lib_header_only)
-add_subdirectory(your_app_lib)
-add_subdirectory(your_app_lib_header_only)
+add_subdirectory(cppsl)
+add_subdirectory(cppsl_header_only)
+add_subdirectory(app_lib)
+add_subdirectory(app_lib_header_only)
