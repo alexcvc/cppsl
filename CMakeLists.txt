@@ -47,7 +47,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 ### Options
-option(BUILD_SHARED_LIBS "Build libraries as shared as opposed to static" ON)
+option(BUILD_SHARED_LIBS "Build libraries as shared as opposed to static" OFF)
 option(BUILD_TESTING "Create tests using CMake" OFF)
 option(BUILD_EXAMPLES "Build examples using CMake" ON)
 

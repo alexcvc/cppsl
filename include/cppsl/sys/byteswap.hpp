@@ -42,21 +42,21 @@ namespace cppsl::sys {
   namespace detail {
 
     template<typename T, size_t sz>
-    struct SwapBytes {
+    struct swap {
       inline T operator()(T val) {
         throw std::out_of_range("data size");
       }
     };
 
     template<typename T>
-    struct SwapBytes<T, 1> {
+    struct swap<T, 1> {
       inline T operator()(T val) {
         return val;
       }
     };
 
     template<typename T>
-    struct SwapBytes<T, 2> // for 16 bit
+    struct swap<T, 2> // for 16 bit
     {
       inline T operator()(T val) {
         return ((((val) >> 8) & 0xff) | (((val) & 0xff) << 8));
@@ -64,7 +64,7 @@ namespace cppsl::sys {
     };
 
     template<typename T>
-    struct SwapBytes<T, 4> // for 32 bit
+    struct swap<T, 4> // for 32 bit
     {
       inline T operator()(T val) {
         return ((((val) & 0xff000000) >> 24) |
@@ -75,15 +75,15 @@ namespace cppsl::sys {
     };
 
     template<>
-    struct SwapBytes<float, 4> {
+    struct swap<float, 4> {
       inline float operator()(float val) {
-        uint32_t mem = SwapBytes<uint32_t, sizeof(uint32_t)>()(*(uint32_t *) &val);
+        uint32_t mem = swap<uint32_t, sizeof(uint32_t)>()(*(uint32_t *) &val);
         return *(float *) &mem;
       }
     };
 
     template<typename T>
-    struct SwapBytes<T, 8> // for 64 bit
+    struct swap<T, 8> // for 64 bit
     {
       inline T operator()(T val) {
         return ((((val) & 0xff00000000000000ull) >> 56) |
@@ -98,17 +98,24 @@ namespace cppsl::sys {
     };
 
     template<>
-    struct SwapBytes<double, 8> {
+    struct swap<double, 8> {
       inline double operator()(double val) {
-        uint64_t mem = SwapBytes<uint64_t, sizeof(uint64_t)>()(*(uint64_t *) &val);
+        uint64_t mem = swap<uint64_t, sizeof(uint64_t)>()(*(uint64_t *) &val);
         return *(double *) &mem;
       }
     };
 
-    template<endian from, endian to, class T>
-    struct DoByteSwap {
+    template<class T>
+    struct do_swap_always {
       inline T operator()(T value) {
-        return SwapBytes<T, sizeof(T)>()(value);
+        return swap<T, sizeof(T)>()(value);
+      }
+    };
+
+    template<endian from, endian to, class T>
+    struct do_swap {
+      inline T operator()(T value) {
+        return swap<T, sizeof(T)>()(value);
       }
     };
 
@@ -116,22 +123,38 @@ namespace cppsl::sys {
 
     // little -> little
     template<class T>
-    struct DoByteSwap<endian::little_endian, endian::little_endian, T> { inline T operator()(T value) { return value; }};
+    struct do_swap<endian::little_endian, endian::little_endian, T> { inline T operator()(T value) { return value; }};
 
     // big -> big
     template<class T>
-    struct DoByteSwap<endian::big_endian, endian::big_endian, T> { inline T operator()(T value) { return value; }};
+    struct do_swap<endian::big_endian, endian::big_endian, T> { inline T operator()(T value) { return value; }};
 
   } // namespace detail
 
-  template<endian from, endian to, class T>
-  inline T ByteSwap(T value) {
+  /// swap anyway
+  /// \tparam T 
+  /// \param value 
+  template<class T>
+  inline T byteswap(T value) {
     // ensure the data is only 1, 2, 4 or 8 bytes
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8, "data is only 1, 2, 4 or 8 bytes");
     // ensure we're only swapping arithmetic types
     static_assert(std::is_arithmetic<T>::value, "only swapping arithmetic types");
 
-    return detail::DoByteSwap<from, to, T>()(value);
+    return detail::do_swap_always<T>()(value);
+  }
+
+  /// swap from to byte ordering
+  /// \tparam T 
+  /// \param value 
+  template<endian from, endian to, class T>
+  inline T byteswap(T value) {
+    // ensure the data is only 1, 2, 4 or 8 bytes
+    static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8, "data is only 1, 2, 4 or 8 bytes");
+    // ensure we're only swapping arithmetic types
+    static_assert(std::is_arithmetic<T>::value, "only swapping arithmetic types");
+
+    return detail::do_swap<from, to, T>()(value);
   }
 }  // namespace cppsl::sys
 
