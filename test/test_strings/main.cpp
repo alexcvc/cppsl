@@ -2,10 +2,12 @@
 
 #include <iostream>
 #include <cstring>
-#include <compare>
 #include <doctest/doctest.h>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#if __cplusplus >= 202002L
+#include <compare>
+#endif
 
 using namespace std;
 
@@ -86,7 +88,8 @@ TEST_CASE("C++ string comparing") {
       if (result == 0) { cout << "equal" << endl; }
    }
 
-
+#if __cplusplus >= 202002L
+    // C++20 (and later) code
    {
       // C++20 three-way comparison operator
       string a{ "12" };
@@ -96,6 +99,7 @@ TEST_CASE("C++ string comparing") {
       if (is_gt(result)) { cout << "greater" << endl; }
       if (is_eq(result)) { cout << "equal" << endl; }
    }
+#endif
 
    {
       string myString{ "hello" };

@@ -1,4 +1,4 @@
-#include <your_lib/your_lib.h>
+#include <cppsl/cppsl.h>
 
 #include <cstdlib>
 #include <cmath>
@@ -7,8 +7,8 @@
 int main() {
    std::cout << "Running test on the exported library!" << std::endl;
 
-   your_lib::summationClass sumClass;
-   your_lib::differenceClass diffClass;
+   cppsl::summationClass sumClass;
+   cppsl::differenceClass diffClass;
 
    double tol = 1e-10;
    double op1 = 15.0;

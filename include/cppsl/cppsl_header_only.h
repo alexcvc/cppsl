@@ -2,11 +2,11 @@
 #define B5987B1D_D0E2_445C_BBB7_A4089035AF6D
 
 /**
- * \ingroup your_lib_namespace
+ * \ingroup cppsl_namespace
  *
- * your_lib namespace.
+ * cppsl namespace.
  */
-namespace your_lib {
+namespace cppsl {
 
 /**
  * @brief Computes the sum of two values.
@@ -33,6 +33,6 @@ DatumType sub(DatumType op1, DatumType op2)
     return (op1 - op2);
 }
 
-} // namespace your_lib
+} // namespace cppsl
 
 #endif /* B5987B1D_D0E2_445C_BBB7_A4089035AF6D */

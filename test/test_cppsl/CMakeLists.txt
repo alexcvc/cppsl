@@ -1,4 +1,4 @@
-set(TEST_TARGET_NAME test_your_lib)
+set(TEST_TARGET_NAME test_cppsl)
 
 set(${TEST_TARGET_NAME}_SRC
         check_sum_and_diff.cpp
@@ -6,7 +6,8 @@ set(${TEST_TARGET_NAME}_SRC
 
 add_executable(${TEST_TARGET_NAME} ${${TEST_TARGET_NAME}_SRC})
 
-target_link_libraries(${TEST_TARGET_NAME} your_lib::your_lib)
+target_include_directories(${TEST_TARGET_NAME} PRIVATE ${cppsl_INCLUDE_DIR})
+target_link_libraries(${TEST_TARGET_NAME} cppsl::cppsl)
 
 # Add a test to the project to be run by ctest.
 # See https://cmake.org/cmake/help/latest/command/add_test.html

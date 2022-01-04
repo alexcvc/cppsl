@@ -1,5 +1,5 @@
 ##
-# CMakefile.txt: src/your_lib/CMakeLists.txt
+# CMakefile.txt: src/cppsl/CMakeLists.txt
 # Project:
 # Date: 2021-12-16
 # Author:
@@ -30,12 +30,16 @@ set(LIBRARY_TARGET_NAME ${PROJECT_NAME})
 
 # List of CPP (source) library files.
 set(${LIBRARY_TARGET_NAME}_SRC
-        src/your_lib.cpp
+        src/cppsl.cpp
 )
 
 # List of HPP (header) library files.
 set(${LIBRARY_TARGET_NAME}_HDR
-        include/your_lib/your_lib.h
+        ../../include/cppsl/cppsl.h
+        ../../include/cppsl/enumBits.hpp
+        ../../include/cppsl/results.hpp
+        ../../include/cppsl/console/menu.hpp
+        ../../include/cppsl/sys/byteswap.hpp
 )
 
 # You can add an external dependency using the find_package() function call
@@ -61,7 +65,7 @@ set(${LIBRARY_TARGET_NAME}_HDR
 add_library(${LIBRARY_TARGET_NAME} ${${LIBRARY_TARGET_NAME}_SRC} ${${LIBRARY_TARGET_NAME}_HDR})
 
 # Within this project, you can link to this library by just specifing the name
-# of the target, i.e. ${LIBRARY_TARGET_NAME} = your_lib. It is useful,
+# of the target, i.e. ${LIBRARY_TARGET_NAME} = cppsl. It is useful,
 # however, to define an alias of this library with the scope of the exported
 # library itself because (1) you will link against it with the exact same syntax
 # of an imported library and (2) because names having a double-colon (::) are
@@ -78,7 +82,7 @@ set_target_properties(${LIBRARY_TARGET_NAME} PROPERTIES VERSION       ${${PROJEC
 # Specify include directories for both compilation and installation process.
 # The $<INSTALL_PREFIX> generator expression is useful to ensure to create
 # relocatable configuration files, see https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html#creating-relocatable-packages
-target_include_directories(${LIBRARY_TARGET_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+target_include_directories(${LIBRARY_TARGET_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../include>"
                                                          "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
 
 # If you used find_package() you need to use target_include_directories() and/or
