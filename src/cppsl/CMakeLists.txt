@@ -51,6 +51,9 @@ set(${LIBRARY_TARGET_NAME}_HDR
         "../../include/cppsl/log/wrappers.h"
         "../../include/cppsl/log/appender.hpp"
         "../../include/cppsl/sys/byteswap.hpp"
+        "../../include/cppsl/threading/delegateBase.hpp"
+        "../../include/cppsl/threading/delegate.hpp"
+        "../../include/cppsl/threading/interlockedProperty.hpp"
         )
 
 # You can add an external dependency using the find_package() function call
