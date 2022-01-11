@@ -1,9 +1,9 @@
 //
-// Author: Alexander Sacharov <a.sacharov@gmx.de>
-// Year:   2022
+// Copyright (c) 2022 Alexander Sacharov <a.sacharov@gmx.de>
+//               All rights reserved.
 //
-// This is free and unencumbered software released into the public domain.
-// For more information, please refer to <https://unlicense.org>
+// This work is licensed under the terms of the MIT license.
+// For a copy, see <https://opensource.org/licenses/MIT>.
 //
 
 /*************************************************************************/ /**
@@ -86,13 +86,12 @@
  *  ...
  */
 
-#ifndef FC04108B_1C9C_474E_ACD5_2B632497DC0C
-#define FC04108B_1C9C_474E_ACD5_2B632497DC0C
+#ifndef EA3C8146_3CEF_4C3B_9789_14772CA8FD66
+#define EA3C8146_3CEF_4C3B_9789_14772CA8FD66
 
 //-----------------------------------------------------------------------------
 // includes <...>
 //-----------------------------------------------------------------------------
-#include <any>
 #include <cctype>
 #include <iostream>
 #include <limits>
@@ -100,6 +99,7 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
+#include <any>
 #include <variant>
 #include <vector>
 
@@ -432,4 +432,4 @@ namespace cppsl::console::menu {
 
 }// namespace cppsl::console::menu
 
-#endif /* FC04108B_1C9C_474E_ACD5_2B632497DC0C */
+#endif /* EA3C8146_3CEF_4C3B_9789_14772CA8FD66 */

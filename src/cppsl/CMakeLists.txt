@@ -1,6 +1,6 @@
 ##
 # CMakefile.txt: src/cppsl/CMakeLists.txt
-# Project:
+# Project: cppsl (C++ support library)
 # Date: 2021-12-16
 # Author:
 # Notes:
@@ -30,17 +30,28 @@ set(LIBRARY_TARGET_NAME ${PROJECT_NAME})
 
 # List of CPP (source) library files.
 set(${LIBRARY_TARGET_NAME}_SRC
-        src/cppsl.cpp
+        "src/cppsl.cpp"
+        "src/file/baseAppender.cpp"
+        "src/file/rollAppender.cpp"
+        "src/log/wrappers.cpp"
+        "src/log/appender.cpp"
 )
 
 # List of HPP (header) library files.
 set(${LIBRARY_TARGET_NAME}_HDR
-        ../../include/cppsl/cppsl.h
-        ../../include/cppsl/enumBits.hpp
-        ../../include/cppsl/results.hpp
-        ../../include/cppsl/console/menu.hpp
-        ../../include/cppsl/sys/byteswap.hpp
-)
+        "../../include/cppsl/cppsl.h"
+        "../../include/cppsl/enumBits.hpp"
+        "../../include/cppsl/results.hpp"
+        "../../include/cppsl/console/menu.hpp"
+        "../../include/cppsl/file/baseAppender.hpp"
+        "../../include/cppsl/file/rollAppender.hpp"
+        "../../include/cppsl/log/details/fallback_sink.hpp"
+        "../../include/cppsl/log/details/rsyslog_sink.hpp"
+        "../../include/cppsl/log/anylog.hpp"
+        "../../include/cppsl/log/wrappers.h"
+        "../../include/cppsl/log/appender.hpp"
+        "../../include/cppsl/sys/byteswap.hpp"
+        )
 
 # You can add an external dependency using the find_package() function call
 # See: https://cmake.org/cmake/help/latest/command/find_package.html
@@ -82,7 +93,7 @@ set_target_properties(${LIBRARY_TARGET_NAME} PROPERTIES VERSION       ${${PROJEC
 # Specify include directories for both compilation and installation process.
 # The $<INSTALL_PREFIX> generator expression is useful to ensure to create
 # relocatable configuration files, see https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html#creating-relocatable-packages
-target_include_directories(${LIBRARY_TARGET_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../include>"
+target_include_directories(${LIBRARY_TARGET_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>"
                                                          "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
 
 # If you used find_package() you need to use target_include_directories() and/or

@@ -1,12 +1,28 @@
+//
+// Copyright (c) 2022 Alexander Sacharov <a.sacharov@gmx.de>
+//               All rights reserved.
+//
+// This work is licensed under the terms of the MIT license.
+// For a copy, see <https://opensource.org/licenses/MIT>.
+//
 
-#ifndef EF70C160_D689_45AE_AE52_4AD10A99FAC3
-#define EF70C160_D689_45AE_AE52_4AD10A99FAC3
+/*************************************************************************//**
+ * \file    byteswap.hpp
+ * \brief   contains byte swap (as starting C++20).
+ * \author  Alexander Sacharov
+ * \date    2022-01-11
+ * \ingroup
+ *****************************************************************************/
+
+#ifndef F9422AC2_6FD6_43A2_B11F_E649B88AF537
+#define F9422AC2_6FD6_43A2_B11F_E649B88AF537
 
 //-----------------------------------------------------------------------------
 // includes <...>
 //-----------------------------------------------------------------------------
 #include <endian.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 //-----------------------------------------------------------------------------
 // includes "..."
@@ -162,4 +178,4 @@ namespace cppsl {
   using endiannes = cppsl::sys::endian;
 } // end of cppsl
 
-#endif /* EF70C160_D689_45AE_AE52_4AD10A99FAC3 */
+#endif /* F9422AC2_6FD6_43A2_B11F_E649B88AF537 */
