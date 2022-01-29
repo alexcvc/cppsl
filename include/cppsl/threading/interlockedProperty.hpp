@@ -20,8 +20,8 @@
  * \date        2021-10-24
  *****************************************************************************/
 
-#ifndef E2F72EB7_0A8D_43F1_9098_74FCA82E55E3
-#define E2F72EB7_0A8D_43F1_9098_74FCA82E55E3
+#ifndef C4B7D4ED_1C1B_4825_879B_F02919F82E03
+#define C4B7D4ED_1C1B_4825_879B_F02919F82E03
 
 //-----------------------------------------------------------------------------
 // includes <...>
@@ -42,19 +42,19 @@ namespace cppsl::threading {
    * Class implements object inter locked object with type T .
    */
   template<typename T>
-  class InterlockedProperty {
+  class interlocked_property {
    public:
 
-    InterlockedProperty() : InterlockedProperty(nullptr, nullptr) {}
+    interlocked_property() : interlocked_property(nullptr, nullptr) {}
 
-    InterlockedProperty(const T &value) : InterlockedProperty(nullptr, &value) {}
+    interlocked_property(const T &value) : interlocked_property(nullptr, &value) {}
 
-    InterlockedProperty(std::mutex &sharedMutex) : InterlockedProperty(&sharedMutex, nullptr) {}
+    interlocked_property(std::mutex &sharedMutex) : interlocked_property(&sharedMutex, nullptr) {}
 
-    InterlockedProperty(std::mutex &sharedMutex, const T &value) : InterlockedProperty(&sharedMutex, &value) {}
+    interlocked_property(std::mutex &sharedMutex, const T &value) : interlocked_property(&sharedMutex, &value) {}
 
     /// operator=
-    InterlockedProperty &operator=(InterlockedProperty &other) {
+    interlocked_property &operator=(interlocked_property &other) {
       this->m_mutex = other.m_mutex;
       this->m_value = other.m_value;
       return *this;
@@ -78,7 +78,7 @@ namespace cppsl::threading {
 
    private:
 
-    InterlockedProperty(std::mutex *sharedMutex, const T *value) {
+    interlocked_property(std::mutex *sharedMutex, const T *value) {
       if (sharedMutex == nullptr)
         m_mutex = &m_uniqueMutex;
       else
@@ -95,4 +95,4 @@ namespace cppsl::threading {
 
 } /* namespace cppsl::threading */
 
-#endif /* E2F72EB7_0A8D_43F1_9098_74FCA82E55E3 */
+#endif /* C4B7D4ED_1C1B_4825_879B_F02919F82E03 */

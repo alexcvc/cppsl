@@ -14,14 +14,22 @@
  * \ingroup
  *****************************************************************************/
 
-#ifndef F1307F61_0813_4383_A0AD_FD35B0FE1DA3
-#define F1307F61_0813_4383_A0AD_FD35B0FE1DA3
+#ifndef A15BA77F_6AEC_4A8D_ADC4_5162C993D493
+#define A15BA77F_6AEC_4A8D_ADC4_5162C993D49
 
 //-----------------------------------------------------------------------------
 // Includes
 //-----------------------------------------------------------------------------
 #include <memory>
 #include <atomic>
+
+//----------------------------------------------------------------------------
+// Defines and macros
+//----------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------
+// Typedefs, structs, enums, unions and variables
+//----------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------
 // Public Prototypes
@@ -34,11 +42,11 @@ namespace cppsl::threading {
   /// @date   2016/02/26
 
   template<typename T>
-  class LockFreeQueue {
+  class queue_none_lock {
    private:
     /// copy constructor and =operation
-    LockFreeQueue(const LockFreeQueue &other);
-    LockFreeQueue &operator=(const LockFreeQueue &other);
+    queue_none_lock(const queue_none_lock &other);
+    queue_none_lock &operator=(const queue_none_lock &other);
 
     /// queue node
     struct node {
@@ -63,15 +71,11 @@ namespace cppsl::threading {
 
    public:
     /// default constructor
-    LockFreeQueue() :
+    queue_none_lock() :
        head(new node), tail(head.load()) {}
 
-    ///// copy constructor and =operation
-    //LockFreeQueue(const LockFreeQueue& other) = delete;
-    //LockFreeQueue& operator=(const LockFreeQueue& other) = delete;
-
     /// destructor
-    ~LockFreeQueue() {
+    ~queue_none_lock() {
       while (node *const old_head = head.load()) {
         head.store(old_head->next);
         delete old_head;
@@ -107,4 +111,4 @@ namespace cppsl::threading {
 
 } //namespace cppsl::threading
 
-#endif /* F1307F61_0813_4383_A0AD_FD35B0FE1DA3 */
+#endif /* A15BA77F_6AEC_4A8D_ADC4_5162C993D493 */

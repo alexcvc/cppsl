@@ -6,17 +6,32 @@
 * @ingroup COM4CPP Library
 *****************************************************************************/
 
-#ifndef B2EC764D_9A73_4A09_B31A_7C2A28F15BF8
-#define B2EC764D_9A73_4A09_B31A_7C2A28F15BF8
+#ifndef C9070EDD_CBB7_440E_BD9A_B13FC9BFA1A3
+#define C9070EDD_CBB7_440E_BD9A_B13FC9BFA1A3
 
+//-----------------------------------------------------------------------------
+// includes <...>
+//-----------------------------------------------------------------------------
 #include <memory>
 #include <mutex>
+
+//----------------------------------------------------------------------------
+// Defines and macros
+//----------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------
+// Typedefs, structs, enums, unions and variables
+//----------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------
+// Public Prototypes
+//----------------------------------------------------------------------------
 
 namespace cppsl {
    namespace threading {
 
       template<typename T>
-      class threadSafeList
+      class list_tsafe
       {
           struct node {
               std::mutex            mtx;
@@ -31,9 +46,9 @@ namespace cppsl {
           node head;
 
       public:
-          threadSafeList() {}
+          list_tsafe() {}
 
-          ~threadSafeList()
+          ~list_tsafe()
           {
               remove_if( [](T const&) {return true;} );
           }
@@ -125,11 +140,11 @@ namespace cppsl {
               }
           }
       private:
-          threadSafeList(threadSafeList const& other)
+          list_tsafe(list_tsafe const& other)
           {
               throw std::logic_error("The method not implemented.");
           }
-          threadSafeList& operator=(threadSafeList const& other)
+          list_tsafe& operator=(list_tsafe const& other)
           {
               throw std::logic_error("The method not implemented.");
           }
@@ -138,4 +153,4 @@ namespace cppsl {
    } // end of threading
 } //namespace cppsl
 
-#endif /* B2EC764D_9A73_4A09_B31A_7C2A28F15BF8 */
+#endif /* C9070EDD_CBB7_440E_BD9A_B13FC9BFA1A3 */

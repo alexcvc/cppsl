@@ -47,7 +47,7 @@ namespace cppsl::threading {
   /// @author Alexander Sacharov
   //
   class jthread {
-    std::thread _thread;  /// member thread
+    std::thread m_thread;  /// member thread
 
    public:
 
@@ -57,21 +57,21 @@ namespace cppsl::threading {
     /// explicit universal ctor
     template<typename Callable, typename ... Args>
     explicit jthread(Callable &&func, Args &&... args):
-       _thread(std::forward<Callable>(func), std::forward<Args>(args)...) {}
+       m_thread(std::forward<Callable>(func), std::forward<Args>(args)...) {}
 
     /// ctor with thread move
     explicit jthread(std::thread t_) noexcept:
-       _thread(std::move(t_)) {}
+       m_thread(std::move(t_)) {}
 
     /// copy ctor
     jthread(jthread &&other) noexcept:
-       _thread(std::move(other._thread)) {}
+       m_thread(std::move(other.m_thread)) {}
 
     /// assignment
     jthread &operator=(jthread &&other) noexcept {
       if (joinable())
         join();
-      _thread = std::move(other._thread);
+      m_thread = std::move(other.m_thread);
       return *this;
     }
 
@@ -79,7 +79,7 @@ namespace cppsl::threading {
     jthread &operator=(std::thread other) noexcept {
       if (joinable())
         join();
-      _thread = std::move(other);
+      m_thread = std::move(other);
       return *this;
     }
 
@@ -91,37 +91,37 @@ namespace cppsl::threading {
 
     /// swap (move) other jthread
     void swap(jthread &other) noexcept {
-      _thread.swap(other._thread);
+      m_thread.swap(other.m_thread);
     }
 
     /// get thread id
     std::thread::id get_id() const noexcept {
-      return _thread.get_id();
+      return m_thread.get_id();
     }
 
     /// is joinable
     bool joinable() const noexcept {
-      return _thread.joinable();
+      return m_thread.joinable();
     }
 
     /// join thread
     void join() {
-      _thread.join();
+      m_thread.join();
     }
 
     /// detach thread
     void detach() {
-      _thread.detach();
+      m_thread.detach();
     }
 
     /// returns reference to thread
     std::thread &as_thread() noexcept {
-      return _thread;
+      return m_thread;
     }
 
     /// returns const reference to thread
     const std::thread &as_thread() const noexcept {
-      return _thread;
+      return m_thread;
     }
   };
 

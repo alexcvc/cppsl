@@ -15,7 +15,7 @@
 #pragma once
 #include <iostream>
 #include <chrono>
-#include "InterlockedProperty.h"
+#include "interlocked_property.h"
 #include "ThreadWrapper.h"
 
 using natural = unsigned long long int;
@@ -23,9 +23,9 @@ using natural = unsigned long long int;
 class MyThread : public ThreadWrapper {
 public:
 	MyThread() : id(mutex, 2), name(mutex) {}
-	InterlockedProperty<int> id;
-	InterlockedProperty<const char*> name, help;
-	InterlockedProperty<natural> delayMs;
+	interlocked_property<int> id;
+	interlocked_property<const char*> name, help;
+	interlocked_property<natural> delayMs;
 protected:
 	void Body() override {
 		auto sleep = [=] {

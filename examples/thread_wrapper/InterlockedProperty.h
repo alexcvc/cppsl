@@ -16,15 +16,15 @@
 #include <mutex>
 
 template<typename T>
-class InterlockedProperty {
+class interlocked_property {
 public:
 
-	InterlockedProperty() : InterlockedProperty(nullptr, nullptr) { }
-	InterlockedProperty(const T &value) : InterlockedProperty(nullptr, &value) { }
-	InterlockedProperty(std::mutex& sharedMutex) : InterlockedProperty(&sharedMutex, nullptr) { }
-	InterlockedProperty(std::mutex& sharedMutex, const T &value) : InterlockedProperty(&sharedMutex, &value) { }
+	interlocked_property() : interlocked_property(nullptr, nullptr) { }
+	interlocked_property(const T &value) : interlocked_property(nullptr, &value) { }
+	interlocked_property(std::mutex& sharedMutex) : interlocked_property(&sharedMutex, nullptr) { }
+	interlocked_property(std::mutex& sharedMutex, const T &value) : interlocked_property(&sharedMutex, &value) { }
 
-	InterlockedProperty& operator=(InterlockedProperty& other) {
+	interlocked_property& operator=(interlocked_property& other) {
 		this->mutex = other.mutex;
 		this->value = other.value;
 		return *this;
@@ -46,14 +46,14 @@ public:
 
 private:
 
-	InterlockedProperty(std::mutex * sharedMutex, const T * value) {
+	interlocked_property(std::mutex * sharedMutex, const T * value) {
 		if (sharedMutex == nullptr)
 			mutex = &uniqueMutex;
 		else
 			mutex = sharedMutex;
 		if (value != nullptr) // don't use mutex to interlock value here: it could be not yet fully constructed
 			this->value = *value;
-	} //InterlockedProperty
+	} //interlocked_property
 
 	std::mutex uniqueMutex;
 	std::mutex * mutex;
