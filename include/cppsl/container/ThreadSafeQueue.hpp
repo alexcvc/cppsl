@@ -7,7 +7,7 @@
 //
 
 /*************************************************************************//**
-* @file    queue_tsafe.hpp
+* @file    ThreadSafeQueue.hpp
 * @brief   thread safe queue with locking.
 * @author  Alexander Sacharov <a.sacharov@asoft-labs.de>
 * @ingroup Containers
@@ -39,7 +39,7 @@
 namespace cppsl::container {
 
    template<typename T>
-   class queue_tsafe {
+   class ThreadSafeQueue {
       private:
       /// private variables
       mutable std::mutex      mut;
@@ -48,10 +48,10 @@ namespace cppsl::container {
 
       public:
       /// default constructor
-      queue_tsafe() {}
+      ThreadSafeQueue() {}
 
       /// copy constructor
-      queue_tsafe(queue_tsafe const &other) {
+      ThreadSafeQueue(ThreadSafeQueue const &other) {
          std::lock_guard<std::mutex> lk(other.mut);
          data_queue = other.data_queue;
       }

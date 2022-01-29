@@ -7,7 +7,7 @@
 //
 
 /*************************************************************************//**
- * \file    deque_tsafe.hpp
+ * \file    ThreadSafeDeque.hpp
  * \brief   contains a safe dual queue container using fixed size memory 
  * allocation and handling of elements at both ends in constant time..
  * \author  Alexander Sacharov
@@ -57,7 +57,7 @@ namespace cppsl::container {
    /// of elements at both ends in constant time.
 
    template<typename T, typename _TAlloc = std::allocator<T>>
-   class deque_tsafe {
+   class ThreadSafeDeque {
 
       private:
       mutable std::mutex m_semaphore;
@@ -66,11 +66,11 @@ namespace cppsl::container {
 
       public:
       /// default constructor
-      deque_tsafe() {}
+      ThreadSafeDeque() {}
 
       /// copy constructor
       /// \param rvalue dequeue
-      deque_tsafe(deque_tsafe const &other) {
+      ThreadSafeDeque(ThreadSafeDeque const &other) {
          std::lock_guard<std::mutex> lk(other.m_semaphore);
          m_container = other.m_container;
       }
