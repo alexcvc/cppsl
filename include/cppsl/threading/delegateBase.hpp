@@ -22,8 +22,8 @@
  * \date        2021-10-24
  *****************************************************************************/
 
-#ifndef A0C4EFF7_43C9_4303_A815_9C2361E280C5
-#define A0C4EFF7_43C9_4303_A815_9C2361E280C5
+#ifndef E3BE096C_F46D_4BA5_9B07_4B3ED78BEE5D
+#define E3BE096C_F46D_4BA5_9B07_4B3ED78BEE5D
 
 //-----------------------------------------------------------------------------
 // includes <...>
@@ -74,4 +74,4 @@ namespace cppsl::threading {
 
 } /* namespace cppsl::threading */
 
-#endif /* A0C4EFF7_43C9_4303_A815_9C2361E280C5 */
+#endif /* E3BE096C_F46D_4BA5_9B07_4B3ED78BEE5D */

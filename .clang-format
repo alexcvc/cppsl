@@ -1,14 +1,14 @@
 # Generated from CLion C/C++ Code Style settings
 BasedOnStyle: LLVM
-AccessModifierOffset: -3
+AccessModifierOffset: -1
 AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: None
-AlignOperands: Align
+AlignOperands: DontAlign
 AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: Always
-AllowShortCaseLabelsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: Always
 AllowShortLambdasOnASingleLine: All
@@ -24,12 +24,12 @@ BraceWrapping:
   AfterFunction: false
   AfterNamespace: false
   AfterUnion: false
-  BeforeCatch: true
-  BeforeElse: true
+  BeforeCatch: false
+  BeforeElse: false
   IndentBraces: false
   SplitEmptyFunction: false
-  SplitEmptyRecord: true
-BreakBeforeBinaryOperators: None
+  SplitEmptyRecord: false
+BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeColon
 BreakInheritanceList: BeforeColon
@@ -38,13 +38,13 @@ CompactNamespaces: false
 ContinuationIndentWidth: 3
 IndentCaseLabels: true
 IndentPPDirectives: None
-IndentWidth: 3
+IndentWidth: 2
 KeepEmptyLinesAtTheStartOfBlocks: true
-MaxEmptyLinesToKeep: 2
-NamespaceIndentation: None
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: All
 ObjCSpaceAfterProperty: false
-ObjCSpaceBeforeProtocolList: true
-PointerAlignment: Left
+ObjCSpaceBeforeProtocolList: false
+PointerAlignment: Right
 ReflowComments: false
 SpaceAfterCStyleCast: true
 SpaceAfterLogicalNot: false
