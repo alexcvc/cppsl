@@ -7,7 +7,7 @@
 //
 
 /*************************************************************************//**
- * \file    lockFreeQueue.hpp
+ * \file    LockFreeQueue.hpp
  * \brief   contains lock free queue.
  * \author  Alexander Sacharov
  * \date    2022-01-11
@@ -42,11 +42,11 @@ namespace cppsl::threading {
   /// @date   2016/02/26
 
   template<typename T>
-  class queue_none_lock {
+  class LockFreeQueue {
    private:
     /// copy constructor and =operation
-    queue_none_lock(const queue_none_lock &other);
-    queue_none_lock &operator=(const queue_none_lock &other);
+    LockFreeQueue(const LockFreeQueue &other);
+    LockFreeQueue &operator=(const LockFreeQueue &other);
 
     /// queue node
     struct node {
@@ -71,11 +71,11 @@ namespace cppsl::threading {
 
    public:
     /// default constructor
-    queue_none_lock() :
+    LockFreeQueue() :
        head(new node), tail(head.load()) {}
 
     /// destructor
-    ~queue_none_lock() {
+    ~LockFreeQueue() {
       while (node *const old_head = head.load()) {
         head.store(old_head->next);
         delete old_head;
