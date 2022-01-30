@@ -15,13 +15,13 @@
 */
 
 /*************************************************************************//**
- * \file        delegate.hh
- * \brief       The delegate type is used to store in the queue, and reflects
+ * \file        Delegate.hpp
+ * \brief       The Delegate type is used to store in the queue, and reflects
  * the profile of the synchronization object and its thread.
- * A synchronization-based delegate instance is passed as the first parameter
+ * A synchronization-based Delegate instance is passed as the first parameter
  * to a task function to allow the application to keep the task responsive to
  * thread throttling and interrupts.
- * The delegate implementation does not have to be implemented in a derived
+ * The Delegate implementation does not have to be implemented in a derived
  * from the thread wrapper class, but can be implemented in a custom class
  * where the synchronization function itself is not available.
  *
@@ -38,7 +38,7 @@
 //-----------------------------------------------------------------------------
 // includes "..."
 //-----------------------------------------------------------------------------
-#include <cppsl/threading/delegateBase.hpp>
+#include <cppsl/threading/delegate_base.h>
 
 //----------------------------------------------------------------------------
 // Public defines and macros
@@ -50,14 +50,14 @@
 
 namespace cppsl::threading {
 
-  template <typename T> class delegate;
+  template <typename T> class Delegate;
   template <typename T> class multicast_delegate;
 
   template<typename RET, typename ...PARAMS>
-  class delegate<RET(PARAMS...)> final : private delegate_base<RET(PARAMS...)> {
+  class Delegate<RET(PARAMS...)> final : private DelegateBase<RET(PARAMS...)> {
    public:
 
-    delegate() = default;
+    Delegate() = default;
 
     bool isNull() const { return invocation.stub == nullptr; }
     bool operator ==(void* ptr) const {
@@ -67,48 +67,48 @@ namespace cppsl::threading {
       return (ptr != nullptr) || (!this->isNull());
     } //operator !=
 
-    delegate(const delegate& another) { another.invocation.Clone(invocation); }
+    Delegate(const Delegate& another) { another.invocation.Clone(invocation); }
 
     template <typename LAMBDA>
-    delegate(const LAMBDA& lambda) {
+    Delegate(const LAMBDA& lambda) {
       assign((void*)(&lambda), lambda_stub<LAMBDA>);
-    } //delegate
+    } //Delegate
 
-    delegate& operator =(const delegate& another) {
+    Delegate& operator =(const Delegate& another) {
       another.invocation.Clone(invocation);
       return *this;
     } //operator =
 
     template <typename LAMBDA> // template instantiation is not needed, will be deduced (inferred):
-    delegate& operator =(const LAMBDA& instance) {
+    Delegate& operator =(const LAMBDA& instance) {
       assign((void*)(&instance), lambda_stub<LAMBDA>);
       return *this;
     } //operator =
 
-    bool operator == (const delegate& another) const { return invocation == another.invocation; }
-    bool operator != (const delegate& another) const { return invocation != another.invocation; }
+    bool operator == (const Delegate& another) const { return invocation == another.invocation; }
+    bool operator != (const Delegate& another) const { return invocation != another.invocation; }
 
     bool operator ==(const multicast_delegate<RET(PARAMS...)>& another) const { return another == (*this); }
     bool operator !=(const multicast_delegate<RET(PARAMS...)>& another) const { return another != (*this); }
 
     template <class T, RET(T::*TMethod)(PARAMS...)>
-    static delegate create(T* instance) {
-      return delegate(instance, method_stub<T, TMethod>);
+    static Delegate create(T* instance) {
+      return Delegate(instance, method_stub<T, TMethod>);
     } //create
 
     template <class T, RET(T::*TMethod)(PARAMS...) const>
-    static delegate create(T const* instance) {
-      return delegate(const_cast<T*>(instance), const_method_stub<T, TMethod>);
+    static Delegate create(T const* instance) {
+      return Delegate(const_cast<T*>(instance), const_method_stub<T, TMethod>);
     } //create
 
     template <RET(*TMethod)(PARAMS...)>
-    static delegate create() {
-      return delegate(nullptr, function_stub<TMethod>);
+    static Delegate create() {
+      return Delegate(nullptr, function_stub<TMethod>);
     } //create
 
     template <typename LAMBDA>
-    static delegate create(const LAMBDA & instance) {
-      return delegate((void*)(&instance), lambda_stub<LAMBDA>);
+    static Delegate create(const LAMBDA & instance) {
+      return Delegate((void*)(&instance), lambda_stub<LAMBDA>);
     } //create
 
     RET operator()(PARAMS... arg) const {
@@ -117,12 +117,12 @@ namespace cppsl::threading {
 
    private:
 
-    delegate(void* anObject, typename delegate_base<RET(PARAMS...)>::stub_type aStub) {
+    Delegate(void* anObject, typename DelegateBase<RET(PARAMS...)>::stub_type aStub) {
       invocation.object = anObject;
       invocation.stub = aStub;
-    } //delegate
+    } //Delegate
 
-    void assign(void* anObject, typename delegate_base<RET(PARAMS...)>::stub_type aStub) {
+    void assign(void* anObject, typename DelegateBase<RET(PARAMS...)>::stub_type aStub) {
       this->invocation.object = anObject;
       this->invocation.stub = aStub;
     } //assign
@@ -151,9 +151,9 @@ namespace cppsl::threading {
     } //lambda_stub
 
     friend class multicast_delegate<RET(PARAMS...)>;
-    typename delegate_base<RET(PARAMS...)>::InvocationElement invocation;
+    typename DelegateBase<RET(PARAMS...)>::InvocationElement invocation;
 
-  }; //class delegate
+  }; //class Delegate
 
 } /* namespace cppsl::threading */
 

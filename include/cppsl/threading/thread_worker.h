@@ -27,7 +27,7 @@
 #include <thread>
 #include <string>
 #include <condition_variable>
-#include <cppsl/log/anylog.hpp>
+#include <cppsl/log/anylog.h>
 
 //----------------------------------------------------------------------------
 // Defines and macros

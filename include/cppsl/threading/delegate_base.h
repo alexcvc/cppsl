@@ -15,8 +15,8 @@
 */
 
 /*************************************************************************//**
- * \file        delegateBase.hh
- * \brief       The delegate base type is used to store in the queue, and reflects
+ * \file        DelegateBase.hpp
+ * \brief       The Delegate base type is used to store in the queue, and reflects
  * the profile of the synchronization object and its thread.
  * \ingroup     Thread Wrapper for Modern C++
  * \date        2021-10-24
@@ -44,10 +44,10 @@
 namespace cppsl::threading {
 
   template<typename T>
-  class delegate_base;
+  class DelegateBase;
 
   template<typename RET, typename ...PARAMS>
-  class delegate_base<RET(PARAMS...)> {
+  class DelegateBase<RET(PARAMS...)> {
 
    protected:
 
@@ -70,7 +70,7 @@ namespace cppsl::threading {
       stub_type stub = nullptr;
     }; //InvocationElement
 
-  }; //class delegate_base
+  }; //class DelegateBase
 
 } /* namespace cppsl::threading */
 

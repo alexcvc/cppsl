@@ -65,13 +65,13 @@ namespace cppsl {
   /// throw an exception if there is no data. The Result user must perform the check.
   // ////////////////////////////////////////////////////////////////////////////
   template<typename T>
-  class result_optval {
+  class ResultOptVal {
    public:
-    constexpr result_optval(T const &&t) noexcept
+    constexpr ResultOptVal(T const &&t) noexcept
        : _opt_result_value{t} {
     }
 
-    explicit constexpr result_optval() noexcept = default;
+    explicit constexpr ResultOptVal() noexcept = default;
 
     [[nodiscard]] constexpr bool valid() const noexcept {
       return _opt_result_value.has_value();
@@ -99,10 +99,10 @@ namespace cppsl {
   /// That left std::variant as a possibility instead of using std::optional.
   // ////////////////////////////////////////////////////////////////////////////
   template<typename T>
-  struct result_var : protected std::variant<std::monostate, T> {
-    explicit constexpr result_var() noexcept = default;
+  struct ResultVarVal : protected std::variant<std::monostate, T> {
+    explicit constexpr ResultVarVal() noexcept = default;
 
-    constexpr result_var(T const &&t) noexcept
+    constexpr ResultVarVal(T const &&t) noexcept
        : std::variant<std::monostate, T>{t} {
     }
 
@@ -129,10 +129,10 @@ namespace cppsl {
   /// Another interesting method is value_or() which handles the test used in the other implementations.
   // ////////////////////////////////////////////////////////////////////////////
   template<typename T>
-  struct result_opt : protected std::optional<T> {
-    explicit constexpr result_opt() noexcept = default;
+  struct ResultOptional : protected std::optional<T> {
+    explicit constexpr ResultOptional() noexcept = default;
 
-    constexpr result_opt(T const &&t) noexcept
+    constexpr ResultOptional(T const &&t) noexcept
        : std::optional<T>{t} {
     }
 

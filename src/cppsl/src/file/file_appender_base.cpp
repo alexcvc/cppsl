@@ -25,7 +25,7 @@
 //-----------------------------------------------------------------------------
 // includes "..."
 //-----------------------------------------------------------------------------
-#include <cppsl/file/baseAppender.hpp>
+#include <cppsl/file/file_appender_base.h>
 
 using namespace std;
 using namespace cppsl;

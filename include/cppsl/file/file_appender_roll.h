@@ -25,8 +25,8 @@
 //-----------------------------------------------------------------------------
 // includes "..."
 //-----------------------------------------------------------------------------
-#include <cppsl/log/anylog.hpp>
-#include <cppsl/file/baseAppender.hpp>
+#include <cppsl/log/anylog.h>
+#include <cppsl/file/file_appender_base.h>
 
 //----------------------------------------------------------------------------
 // Public defines and macros

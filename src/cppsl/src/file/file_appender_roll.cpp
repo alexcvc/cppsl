@@ -21,7 +21,7 @@
 #include <iostream>
 #include <iomanip>
 #include <math.h>
-#include "cppsl/file/rollAppender.hpp"
+#include "cppsl/file/file_appender_roll.h"
 
 using namespace std;
 using namespace cppsl;

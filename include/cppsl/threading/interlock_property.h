@@ -15,7 +15,7 @@
 */
 
 /*************************************************************************//**
- * \file        interlockProperty.hh
+ * \file        InterlockProperty.hpp
  * \brief       any intern lockable property.
  * \date        2021-10-24
  *****************************************************************************/
@@ -42,19 +42,19 @@ namespace cppsl::threading {
    * Class implements object inter locked object with type T .
    */
   template<typename T>
-  class interlocked_property {
+  class InterlockProperty {
    public:
 
-    interlocked_property() : interlocked_property(nullptr, nullptr) {}
+    InterlockProperty() : InterlockProperty(nullptr, nullptr) {}
 
-    interlocked_property(const T &value) : interlocked_property(nullptr, &value) {}
+    InterlockProperty(const T &value) : InterlockProperty(nullptr, &value) {}
 
-    interlocked_property(std::mutex &sharedMutex) : interlocked_property(&sharedMutex, nullptr) {}
+    InterlockProperty(std::mutex &sharedMutex) : InterlockProperty(&sharedMutex, nullptr) {}
 
-    interlocked_property(std::mutex &sharedMutex, const T &value) : interlocked_property(&sharedMutex, &value) {}
+    InterlockProperty(std::mutex &sharedMutex, const T &value) : InterlockProperty(&sharedMutex, &value) {}
 
     /// operator=
-    interlocked_property &operator=(interlocked_property &other) {
+    InterlockProperty &operator=(InterlockProperty &other) {
       this->m_mutex = other.m_mutex;
       this->m_value = other.m_value;
       return *this;
@@ -78,7 +78,7 @@ namespace cppsl::threading {
 
    private:
 
-    interlocked_property(std::mutex *sharedMutex, const T *value) {
+    InterlockProperty(std::mutex *sharedMutex, const T *value) {
       if (sharedMutex == nullptr)
         m_mutex = &m_uniqueMutex;
       else

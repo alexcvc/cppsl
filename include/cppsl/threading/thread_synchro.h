@@ -43,7 +43,7 @@
 //-----------------------------------------------------------------------------
 // includes "..."
 //-----------------------------------------------------------------------------
-#include "cppsl/threading/delegate.hpp"
+#include "cppsl/threading/delegate.h"
 
 //----------------------------------------------------------------------------
 // Public defines and macros
@@ -186,9 +186,9 @@ namespace cppsl::threading {
       m_stateEvent.notify_one();
     } //SetAbort
 
-    static void initialize_synchronization_delegate(cppsl::threading::delegate<void(bool)> &del,
+    static void initialize_synchronization_delegate(cppsl::threading::Delegate<void(bool)> &del,
                                                     cppsl::threading::ThreadWrapper *instance) {
-      del = cppsl::threading::delegate<void(bool)>::create
+      del = cppsl::threading::Delegate<void(bool)>::create
          <cppsl::threading::ThreadWrapper, &cppsl::threading::ThreadWrapper::synchronization>(instance);
     }
 

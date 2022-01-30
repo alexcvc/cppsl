@@ -8,7 +8,7 @@
 #include <bit>
 #include <iostream>
 #include <iomanip>
-#include <cppsl/sys/byteswap.hpp>
+#include <cppsl/sys/byteswap.h>
 
 using namespace cppsl::sys;
 namespace bytes = cppsl::sys;

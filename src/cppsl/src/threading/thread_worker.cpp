@@ -18,7 +18,7 @@
 #include <cstdlib>
 #include <sstream>
 
-#include "cppsl/threading/threadWorker.hpp"
+#include "cppsl/threading/thread_worker.h"
 
 using namespace std;
 using namespace cppsl;

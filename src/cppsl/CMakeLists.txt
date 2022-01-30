@@ -30,36 +30,33 @@ set(LIBRARY_TARGET_NAME ${PROJECT_NAME})
 
 # List of CPP (source) library files.
 set(${LIBRARY_TARGET_NAME}_SRC
-        "src/cppsl.cpp"
-        "src/file/baseAppender.cpp"
-        "src/file/rollAppender.cpp"
+        "src/file/file_appender_base.cpp"
+        "src/file/file_appender_roll.cpp"
         "src/log/wrappers.cpp"
         "src/log/appender.cpp"
 )
 
 # List of HPP (header) library files.
 set(${LIBRARY_TARGET_NAME}_HDR
-        "../../include/cppsl/cppsl.h"
-        "../../include/cppsl/enumBits.hpp"
-        "../../include/cppsl/results.hpp"
-        "../../include/cppsl/console/menu.hpp"
-        "../../include/cppsl/console/menu.hpp"
-        "../../include/cppsl/container/ThreadSafeDeque.hpp"
-        "../../include/cppsl/container/ThreadSafeList.hh"
-        "../../include/cppsl/container/LockFreeQueue.hpp"
-        "../../include/cppsl/container/ThreadSafeQueue.hpp"
-        "../../include/cppsl/file/baseAppender.hpp"
-        "../../include/cppsl/file/rollAppender.hpp"
-        "../../include/cppsl/log/details/fallback_sink.hpp"
-        "../../include/cppsl/log/details/rsyslog_sink.hpp"
-        "../../include/cppsl/log/anylog.hpp"
+        "enum_bitmask.h"
+        "opt_results.h"
+        "console/menu.h"
+        "console/menu.h"
+        "container/deque_threadsafe.h"
+        "container/list_threadsafe.h"
+        "container/queue_lockfree.h"
+        "container/queue_threadsafe.h"
+        "file/file_appender_base.h"
+        "file/file_appender_roll.h"
+        "log/details/fallback_sink.h"
+        "log/details/rsyslog_sink.h"
+        "log/anylog.h"
         "../../include/cppsl/log/wrappers.h"
-        "../../include/cppsl/log/appender.hpp"
-        "../../include/cppsl/sys/byteswap.hpp"
-        "../../include/cppsl/threading/concurrency.hpp"
-        "../../include/cppsl/threading/delegateBase.hpp"
-        "../../include/cppsl/threading/delegate.hpp"
-        "../../include/cppsl/threading/interlockedProperty.hpp"
+        "log/appender.h"
+        "sys/byteswap.h"
+        "threading/delegate_base.h"
+        "threading/delegate.h"
+        "threading/interlock_property.h"
         )
 
 # You can add an external dependency using the find_package() function call

@@ -11,11 +11,11 @@
 //
 
 /*************************************************************************//**
- * \file    concurrency.hpp
- * \brief   contains useful classes for threading and concurrency.
+ * \file    JThread.hpp
+ * \brief   contains joinable thread class (wrapper).
  * \author  Alexander Sacharov
  * \date    2022-01-13
- * \ingroup
+ * \ingroup Threading
  *****************************************************************************/
 
 #ifndef DA7A4988_DEB1_4AA1_9C88_5F756805A1DB
@@ -46,29 +46,29 @@ namespace cppsl::threading {
   /// included in the destructor. std::jthread is in C++20
   /// @author Alexander Sacharov
   //
-  class jthread {
+  class JThread {
     std::thread m_thread;  /// member thread
 
    public:
 
     /// default ctor
-    jthread() noexcept = default;
+    JThread() noexcept = default;
 
     /// explicit universal ctor
     template<typename Callable, typename ... Args>
-    explicit jthread(Callable &&func, Args &&... args):
+    explicit JThread(Callable &&func, Args &&... args):
        m_thread(std::forward<Callable>(func), std::forward<Args>(args)...) {}
 
     /// ctor with thread move
-    explicit jthread(std::thread t_) noexcept:
+    explicit JThread(std::thread t_) noexcept:
        m_thread(std::move(t_)) {}
 
     /// copy ctor
-    jthread(jthread &&other) noexcept:
+    JThread(JThread &&other) noexcept:
        m_thread(std::move(other.m_thread)) {}
 
     /// assignment
-    jthread &operator=(jthread &&other) noexcept {
+    JThread &operator=(JThread &&other) noexcept {
       if (joinable())
         join();
       m_thread = std::move(other.m_thread);
@@ -76,7 +76,7 @@ namespace cppsl::threading {
     }
 
     /// assignment std::thread
-    jthread &operator=(std::thread other) noexcept {
+    JThread &operator=(std::thread other) noexcept {
       if (joinable())
         join();
       m_thread = std::move(other);
@@ -84,13 +84,13 @@ namespace cppsl::threading {
     }
 
     /// destructor
-    ~jthread() noexcept {
+    ~JThread() noexcept {
       if (joinable())
         join();
     }
 
     /// swap (move) other jthread
-    void swap(jthread &other) noexcept {
+    void swap(JThread &other) noexcept {
       m_thread.swap(other.m_thread);
     }
 

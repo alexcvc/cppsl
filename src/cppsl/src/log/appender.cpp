@@ -31,8 +31,8 @@
 //-----------------------------------------------------------------------------
 // includes "..."
 //-----------------------------------------------------------------------------
-#include <cppsl/log/appender.hpp>
-#include <cppsl/log/details/rsyslog_sink.hpp>
+#include <cppsl/log/appender.h>
+#include <cppsl/log/details/rsyslog_sink.h>
 
 using namespace cppsl::log;
 using namespace std::filesystem;
