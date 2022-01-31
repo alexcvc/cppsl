@@ -34,7 +34,6 @@ set(${LIBRARY_TARGET_NAME}_SRC
         "src/file/file_appender_roll.cpp"
         "src/log/log4c.cpp"
         "src/log/sink_appender.cpp"
-        "src/threading/thread_realtime.cpp"
         "src/threading/thread_worker.cpp"
 )
 
@@ -52,14 +51,15 @@ set(${LIBRARY_TARGET_NAME}_HDR
         "../../include/cppsl/file/file_appender_roll.h"
         "../../include/cppsl/log/details/fallback_sink.h"
         "../../include/cppsl/log/details/rsyslog_sink.h"
-        "log/some_withlog.h"
-        "log/log4c.h"
-        "log/sink_appender.h"
-        "sys/endian.h"
+        "../../include/cppsl/log/some_withlog.h"
+        "../../include/cppsl/log/log4c.h"
+        "../../include/cppsl/log/sink_appender.h"
+        "../../include/cppsl/sys/endian.h"
         "../../include/cppsl/time/timer_interval.h"
         "../../include/cppsl/threading/delegate_base.h"
         "../../include/cppsl/threading/delegate.h"
         "../../include/cppsl/threading/interlock_property.h"
+        "../../include/cppsl/threading/scoped_thread.h"
         )
 
 # You can add an external dependency using the find_package() function call

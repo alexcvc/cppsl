@@ -65,10 +65,10 @@ namespace cppsl::threading {
       JOINABLE,      /* joinable */
     };
 
-    /// driving states
+    /// InsideOrSelf states
     enum class driving_state {
       EVENT_DRIVING, /* thread with waiting for wakeup event with timeout for the thread */
-      SELF_DRIVING,  /* thread with self-driving routines */
+      SELF_DRIVING,  /* thread with self-InsideOrSelf routines */
     };
 
     /// The following is the default constructor if no arguments are supplied.
@@ -105,13 +105,13 @@ namespace cppsl::threading {
     //----------------------------------------------------------------------------
 
     /// @brief     start joinable thread
-    /// @param[in] bool=false - as condition driving, true - self driving
+    /// @param[in] bool=false - as condition InsideOrSelf, true - self InsideOrSelf
     /// @param[in] int - realtime priority (1 = low, 99 = max), if 0 - default
     /// @return    true if the thread started successfully, false - in error case
     bool start_joinable(driving_state howToDrive, int realtimePriority = 0);
 
     /// @brief     start detached thread
-    /// @param[in] bool=false - as condition driving, true - self driving
+    /// @param[in] bool=false - as condition InsideOrSelf, true - self InsideOrSelf
     /// @param[in] int - realtime priority (1 = low, 99 = max), if 0 - default
     /// @return    true if the thread started successfully, false - in error case
     bool start_detached(driving_state howToDrive, int realtimePriority = 0);

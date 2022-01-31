@@ -2,9 +2,9 @@
 #include <vector>
 #include <thread>
 #include <functional>
-#include <cppsl/threading/concurrency.hpp>
+#include <cppsl/threading/jthread.h>
 
-using JThread = cppsl::threading::jthread;
+using JThread = cppsl::threading::JThread;
 
 void do_work(unsigned id) {}
 

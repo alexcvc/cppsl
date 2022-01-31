@@ -26,11 +26,11 @@ using namespace cppsl::threading;
 
 /// The following is the default constructor if no arguments are supplied.
 /// 1000 ms is default
-ThreadWorker::ThreadWorker(std::shared_ptr<cppsl::log::writer> logPtr,
+ThreadWorker::ThreadWorker(cppsl::logAppenderPtr logPtr,
                            unsigned long number,
                            const std::string &name,
                            const std::chrono::microseconds &timeout)
-   : cppsl::anyWithLog(logPtr),
+   : cppsl::log::SomeWithLog(logPtr),
      m_number(number),
      m_state(thread_state::IDLE),
      m_threadid(0),
