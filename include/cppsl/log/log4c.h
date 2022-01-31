@@ -14,8 +14,8 @@
 * @ingroup COM4CPP
 *****************************************************************************/
 
-#ifndef B5377912_86A1_4327_8D85_02653D197E85
-#define B5377912_86A1_4327_8D85_02653D197E85
+#ifndef __INCLUDE_CPPSL_LOG_WRAPPERS_H__
+#define __INCLUDE_CPPSL_LOG_WRAPPERS_H__
 
 //-----------------------------------------------------------------------------
 // includes <...>
@@ -363,4 +363,4 @@ void log4c_logger_log_ffl_var(const char* logger_name, int log_level, const char
 }
 #endif // __cplusplus
 
-#endif /* B5377912_86A1_4327_8D85_02653D197E85 */
+#endif /* __INCLUDE_CPPSL_LOG_WRAPPERS_H__ */

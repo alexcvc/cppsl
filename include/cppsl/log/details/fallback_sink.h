@@ -15,8 +15,8 @@
  * \date        2021-07-28
  *****************************************************************************/
 
-#ifndef CD2AB2FD_E5D4_4799_B1E5_DBC91F436562
-#define CD2AB2FD_E5D4_4799_B1E5_DBC91F436562
+#ifndef __INCLUDE_CPPSL_LOG_DETAILS_FALLBACK_SINK_H__
+#define __INCLUDE_CPPSL_LOG_DETAILS_FALLBACK_SINK_H__
 
 //-----------------------------------------------------------------------------
 // includes <...>
@@ -48,55 +48,55 @@
 //----------------------------------------------------------------------------
 
 namespace spdlog::sinks {
-  class fallback_sink : public sink {
-   public:
+   class fallback_sink : public sink {
+    public:
 
-    ~fallback_sink() {
-      _sinks_to_remove.clear();
-      _sinks.clear();
-    }
-
-    void log(const details::log_msg &msg) override {
-      for (auto &sink : _sinks) {
-        try {
-          sink->log(msg);
-          break;
-        }
-        catch (const std::exception &ex) {
-          sink->flush();
-
-          _sinks_to_remove.push_back(sink);
-        }
-      }
-
-      if (!_sinks_to_remove.empty()) {
-        for (auto sink_to_remove : _sinks_to_remove) {
-          remove_sink(sink_to_remove);
-        }
+      ~fallback_sink() {
         _sinks_to_remove.clear();
+        _sinks.clear();
       }
-    }
 
-    void flush() override {
-      for (auto &sink : _sinks)
-        sink->flush();
-    }
+      void log(const details::log_msg &msg) override {
+        for (auto &sink : _sinks) {
+          try {
+            sink->log(msg);
+            break;
+          }
+          catch (const std::exception &ex) {
+            sink->flush();
 
-    void add_sink(std::shared_ptr<sink> sink) {
-      _sinks.push_back(sink);
-    }
+            _sinks_to_remove.push_back(sink);
+          }
+        }
 
-    void remove_sink(std::shared_ptr<sink> sink) {
-      auto pos = std::find(_sinks.begin(), _sinks.end(), sink);
+        if (!_sinks_to_remove.empty()) {
+          for (auto sink_to_remove : _sinks_to_remove) {
+            remove_sink(sink_to_remove);
+          }
+          _sinks_to_remove.clear();
+        }
+      }
 
-      _sinks.erase(pos);
+      void flush() override {
+        for (auto &sink : _sinks)
+          sink->flush();
+      }
 
-    }
+      void add_sink(std::shared_ptr<sink> sink) {
+        _sinks.push_back(sink);
+      }
 
-   private:
-    std::vector<std::shared_ptr<sink>> _sinks;
-    std::vector<std::shared_ptr<sink>> _sinks_to_remove;
-  };
+      void remove_sink(std::shared_ptr<sink> sink) {
+        auto pos = std::find(_sinks.begin(), _sinks.end(), sink);
+
+        _sinks.erase(pos);
+
+      }
+
+    private:
+      std::vector<std::shared_ptr<sink>> _sinks;
+      std::vector<std::shared_ptr<sink>> _sinks_to_remove;
+   };
 }
 
-#endif /* CD2AB2FD_E5D4_4799_B1E5_DBC91F436562 */
+#endif /* __INCLUDE_CPPSL_LOG_DETAILS_FALLBACK_SINK_H__ */

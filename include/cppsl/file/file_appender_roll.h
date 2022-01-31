@@ -8,14 +8,14 @@
 
 /*************************************************************************//**
  * \file    rollAppender.hpp
- * \brief   contains roll file appender.
+ * \brief   contains roll file SinkAppender.
  * \author  Alexander Sacharov
  * \date    2022-01-07
  * \ingroup C++ support library
  *****************************************************************************/
 
-#ifndef C5EBA765_8A29_465E_9F0A_DB76582AC3D2
-#define C5EBA765_8A29_465E_9F0A_DB76582AC3D2
+#ifndef __INCLUDE_CPPSL_FILE_FILE_APPENDER_ROLL_H__
+#define __INCLUDE_CPPSL_FILE_FILE_APPENDER_ROLL_H__
 
 //-----------------------------------------------------------------------------
 // includes <...>
@@ -25,7 +25,7 @@
 //-----------------------------------------------------------------------------
 // includes "..."
 //-----------------------------------------------------------------------------
-#include <cppsl/log/anylog.h>
+#include <cppsl/log/some_withlog.h>
 #include <cppsl/file/file_appender_base.h>
 
 //----------------------------------------------------------------------------
@@ -57,7 +57,7 @@ namespace cppsl::file {
 
   class fileroll_appender : public filebase_appender {
    public:
-    fileroll_appender(std::shared_ptr<cppsl::log::appender> logPtr,
+    fileroll_appender(std::shared_ptr<cppsl::log::SinkAppender> logPtr,
                       const cppsl::file::fs::path &filePath,
                       size_t maxFileSize = MaxRollFileAppenderSize,
                       unsigned int maxBackupIndex = MaxRollFileAppenderBackIndex,
@@ -84,4 +84,4 @@ namespace cppsl::file {
   };
 }  // end namespace cppsl::file
 
-#endif /* C5EBA765_8A29_465E_9F0A_DB76582AC3D2 */
+#endif /* __INCLUDE_CPPSL_FILE_FILE_APPENDER_ROLL_H__ */

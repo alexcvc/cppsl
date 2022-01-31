@@ -27,7 +27,7 @@
 #include <thread>
 #include <string>
 #include <condition_variable>
-#include <cppsl/log/anylog.h>
+#include <cppsl/log/some_withlog.h>
 
 //----------------------------------------------------------------------------
 // Defines and macros
@@ -47,7 +47,7 @@ namespace cppsl::threading {
   /// Class implements Class base thread is parent for all worker threads
   /// @author Alexander Sacharov
   //
-  class ThreadWorker : public cppsl::log::anylog {
+  class ThreadWorker : public cppsl::log::SomeWithLog {
    public:
     /// states
     enum class thread_state {
@@ -73,7 +73,7 @@ namespace cppsl::threading {
 
     /// The following is the default constructor if no arguments are supplied.
     /// 1000 ms is default
-    ThreadWorker(std::shared_ptr<cppsl::log::appender> logPtr,
+    ThreadWorker(std::shared_ptr<cppsl::log::SinkAppender> logPtr,
                  unsigned long number,
                  const std::string &name,
                  const std::chrono::microseconds &timeout = std::chrono::seconds(1));

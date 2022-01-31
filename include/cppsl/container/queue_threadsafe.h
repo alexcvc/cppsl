@@ -7,14 +7,14 @@
 //
 
 /*************************************************************************//**
-* @file    ThreadSafeQueue.hpp
+* @file    queue_threadsafe.h
 * @brief   thread safe queue with locking.
 * @author  Alexander Sacharov <a.sacharov@asoft-labs.de>
 * @ingroup Containers
 *****************************************************************************/
 
-#ifndef F583C5CB_B5D6_4D2A_BFD3_7D634CA840A7
-#define F583C5CB_B5D6_4D2A_BFD3_7D634CA840A7
+#ifndef __INCLUDE_CPPSL_CONTAINER_QUEUE_THREADSAFE_H__
+#define __INCLUDE_CPPSL_CONTAINER_QUEUE_THREADSAFE_H__
 
 //-----------------------------------------------------------------------------
 // includes
@@ -117,4 +117,4 @@ namespace cppsl::container {
 
 } // namespace cppsl::container
 
-#endif /* F583C5CB_B5D6_4D2A_BFD3_7D634CA840A7 */
+#endif /* __INCLUDE_CPPSL_CONTAINER_QUEUE_THREADSAFE_H__ */

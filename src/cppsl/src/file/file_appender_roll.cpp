@@ -40,7 +40,7 @@ using namespace cppsl::file;
 /// @param     bool append
 /// @param     int mode
 
-fileroll_appender::fileroll_appender(std::shared_ptr<cppsl::log::appender> logPtr,
+fileroll_appender::fileroll_appender(std::shared_ptr<cppsl::log::SinkAppender> logPtr,
                                      const cppsl::file::fs::path   &filePath,
                                      size_t                          maxFileSize,
                                      unsigned int                    maxBackupIndex,

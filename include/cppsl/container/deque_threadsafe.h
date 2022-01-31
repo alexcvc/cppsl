@@ -7,7 +7,7 @@
 //
 
 /*************************************************************************//**
- * \file    ThreadSafeDeque.hpp
+ * \file    deque_threadsafe.h
  * \brief   contains a safe dual queue container using fixed size memory 
  * allocation and handling of elements at both ends in constant time..
  * \author  Alexander Sacharov
@@ -15,8 +15,8 @@
  * \ingroup Container
  *****************************************************************************/
 
-#ifndef C0FFA487_B631_4100_8950_D14B98DDA4CE
-#define C0FFA487_B631_4100_8950_D14B98DDA4CE
+#ifndef __INCLUDE_CPPSL_CONTAINER_DEQUE_THREADSAFE_H__
+#define __INCLUDE_CPPSL_CONTAINER_DEQUE_THREADSAFE_H__
 
 //-----------------------------------------------------------------------------
 // includes 
@@ -191,4 +191,4 @@ namespace cppsl::container {
 
 } // end of namespace
 
-#endif /* C0FFA487_B631_4100_8950_D14B98DDA4CE */
+#endif /* __INCLUDE_CPPSL_CONTAINER_DEQUE_THREADSAFE_H__ */

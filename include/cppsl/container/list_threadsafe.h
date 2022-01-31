@@ -1,13 +1,20 @@
+//
+// Copyright (c) 2022 Alexander Sacharov <a.sacharov@gmx.de>
+//               All rights reserved.
+//
+// This work is licensed under the terms of the MIT license.
+// For a copy, see <https://opensource.org/licenses/MIT>.
+//
 
 /*************************************************************************//**
-* @file    ThreadSafeList.hh
+* @file    list_threadsafe.h
 * @brief   thread safe list class.
 * @author  Alexander Sacharov <a.sacharov@asoft-labs.de>
 * @ingroup COM4CPP Library
 *****************************************************************************/
 
-#ifndef C9070EDD_CBB7_440E_BD9A_B13FC9BFA1A3
-#define C9070EDD_CBB7_440E_BD9A_B13FC9BFA1A3
+#ifndef __INCLUDE_CPPSL_CONTAINER_LIST_THREADSAFE_H__
+#define __INCLUDE_CPPSL_CONTAINER_LIST_THREADSAFE_H__
 
 //-----------------------------------------------------------------------------
 // includes <...>
@@ -33,13 +40,13 @@ namespace cppsl::container {
     class ThreadSafeList
     {
         struct node {
-            std::mutex            mtx;
-            std::shared_ptr<T>    data_ptr;
-            std::unique_ptr<node> next;
+            std::mutex            m_mutex;
+            std::shared_ptr<T>    m_dataSp;
+            std::unique_ptr<node> m_next;
 
-            node(): next() {}
+            node(): m_next() {}
 
-            node(T const& value) : data_ptr(std::make_shared<T>(value)) {}
+            node(T const& value) : m_dataSp(std::make_shared<T>(value)) {}
         };
 
         node head;
@@ -70,9 +77,9 @@ namespace cppsl::container {
         {
             std::unique_ptr<node> new_node( new node(value) );
 
-            std::lock_guard<std::mutex> lk(head.mtx);
-            new_node->next = std::move(head.next);
-            head.next      = std::move(new_node);
+            std::lock_guard<std::mutex> lk(head.m_mutex);
+            new_node->m_next = std::move(head.m_next);
+            head.m_next      = std::move(new_node);
         }
 
         /// @breaf    runs for each.
@@ -84,12 +91,12 @@ namespace cppsl::container {
         {
             node *current = &head;
 
-            std::unique_lock<std::mutex> lk(head.mtx);
-            while (node *const next = current->next.get()) {
-                std::unique_lock<std::mutex> next_lk(next->mtx);
+            std::unique_lock<std::mutex> lk(head.m_mutex);
+            while (node *const m_next = current->m_next.get()) {
+                std::unique_lock<std::mutex> next_lk(m_next->m_mutex);
                 lk.unlock();
-                f(*next->data_ptr);
-                current = next;
+                f(*m_next->m_dataSp);
+                current = m_next;
                 lk = std::move(next_lk);
             }
         }
@@ -103,14 +110,14 @@ namespace cppsl::container {
         {
             node *current = &head;
 
-            std::unique_lock<std::mutex> lk(head.mtx);
-            while (node *const next = current->next.get()) {
-                std::unique_lock<std::mutex> next_lk(next->mtx);
+            std::unique_lock<std::mutex> lk(head.m_mutex);
+            while (node *const m_next = current->m_next.get()) {
+                std::unique_lock<std::mutex> next_lk(m_next->m_mutex);
                 lk.unlock();
-                if ( p(*next->data_ptr) ) {
-                    return next->data_ptr;
+                if ( p(*m_next->m_dataSp) ) {
+                    return m_next->m_dataSp;
                 }
-                current = next;
+                current = m_next;
                 lk = std::move(next_lk);
             }
             return std::shared_ptr<T>();
@@ -124,16 +131,16 @@ namespace cppsl::container {
         void remove_if(Predicate p)
         {
             node *current = &head;
-            std::unique_lock<std::mutex> lk(head.mtx);
-            while (node *const next = current->next.get()) {
-                std::unique_lock<std::mutex> next_lk(next->mtx);
-                if (p(*next->data_ptr)) {
-                    std::unique_ptr<node> old_next = std::move(current->next);
-                    current->next = std::move(next->next);
+            std::unique_lock<std::mutex> lk(head.m_mutex);
+            while (node *const m_next = current->m_next.get()) {
+                std::unique_lock<std::mutex> next_lk(m_next->m_mutex);
+                if (p(*m_next->m_dataSp)) {
+                    std::unique_ptr<node> old_next = std::move(current->m_next);
+                    current->m_next = std::move(m_next->m_next);
                     next_lk.unlock();
                 } else {
                     lk.unlock();
-                    current = next;
+                    current = m_next;
                     lk = std::move(next_lk);
                 }
             }
@@ -151,4 +158,4 @@ namespace cppsl::container {
 
 } // namespace cppsl::container
 
-#endif /* C9070EDD_CBB7_440E_BD9A_B13FC9BFA1A3 */
+#endif /* __INCLUDE_CPPSL_CONTAINER_LIST_THREADSAFE_H__ */

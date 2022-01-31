@@ -31,7 +31,7 @@
 //-----------------------------------------------------------------------------
 // includes "..."
 //-----------------------------------------------------------------------------
-#include <cppsl/log/appender.h>
+#include <cppsl/log/sink_appender.h>
 #include <cppsl/log/details/rsyslog_sink.h>
 
 using namespace cppsl::log;
@@ -59,53 +59,53 @@ namespace filesys = std::filesystem;
  * @param lev
  * @return true if successfully, otherwise - false
  */
-bool appender::open_logger(loglevel lev) {
+bool SinkAppender::open_logger(loglevel lev) {
 
    try {
-      logPtr_.reset();
+      m_logSp.reset();
 
-      if( console_sink_ ) {
-         if(logPtr_) logPtr_->sinks().push_back(console_sink_);
-         else logPtr_ = std::make_shared<spdlog::logger>(name_, console_sink_);
+      if( m_console_sink ) {
+         if(m_logSp) m_logSp->sinks().push_back(m_console_sink);
+         else m_logSp = std::make_shared<spdlog::logger>(m_name, m_console_sink);
       }
 
-      if( file_sink_ ) {
-         if(logPtr_) logPtr_->sinks().push_back(file_sink_);
-         else logPtr_ = std::make_shared<spdlog::logger>(name_, file_sink_);
+      if( m_file_sink ) {
+         if(m_logSp) m_logSp->sinks().push_back(m_file_sink);
+         else m_logSp = std::make_shared<spdlog::logger>(m_name, m_file_sink);
       }
 
-      if( rotate_sink_ ) {
-         if(logPtr_) logPtr_->sinks().push_back(rotate_sink_);
-         else logPtr_ = std::make_shared<spdlog::logger>(name_, rotate_sink_);
+      if( m_rotate_sink ) {
+         if(m_logSp) m_logSp->sinks().push_back(m_rotate_sink);
+         else m_logSp = std::make_shared<spdlog::logger>(m_name, m_rotate_sink);
       }
 
-      if( daily_sink_ ) {
-         if(logPtr_) logPtr_->sinks().push_back(daily_sink_);
-         else logPtr_ = std::make_shared<spdlog::logger>(name_, daily_sink_);
+      if( m_daily_sink ) {
+         if(m_logSp) m_logSp->sinks().push_back(m_daily_sink);
+         else m_logSp = std::make_shared<spdlog::logger>(m_name, m_daily_sink);
       }
 
-      if( syslog_sink_ ) {
-         if(logPtr_) logPtr_->sinks().push_back(syslog_sink_);
-         else logPtr_ = std::make_shared<spdlog::logger>(name_, syslog_sink_);
+      if( m_syslog_sink ) {
+         if(m_logSp) m_logSp->sinks().push_back(m_syslog_sink);
+         else m_logSp = std::make_shared<spdlog::logger>(m_name, m_syslog_sink);
       }
 
-      if( rsyslog_sink_ ) {
-         if(logPtr_) logPtr_->sinks().push_back(rsyslog_sink_);
-         else logPtr_ = std::make_shared<spdlog::logger>(name_, rsyslog_sink_);
+      if( m_rsyslog_sink ) {
+         if(m_logSp) m_logSp->sinks().push_back(m_rsyslog_sink);
+         else m_logSp = std::make_shared<spdlog::logger>(m_name, m_rsyslog_sink);
       }
 
-      if(!logPtr_)
+      if(!m_logSp)
          throw spdlog::spdlog_ex("Log pointer is null");
 
-      logPtr_->set_level(lev);
+      m_logSp->set_level(lev);
 
       // or you can even set multi_sink logger as default logger
-      if (console_sink_) {
-         spdlog::set_default_logger(std::make_shared<spdlog::logger>("console", console_sink_));
-         spdlog::set_level(console_sink_->level());
+      if (m_console_sink) {
+         spdlog::set_default_logger(std::make_shared<spdlog::logger>("console", m_console_sink));
+         spdlog::set_level(m_console_sink->level());
       }
 
-      spdlog::register_logger(logPtr_);
+      spdlog::register_logger(m_logSp);
 
       return true;
    }
@@ -115,13 +115,13 @@ bool appender::open_logger(loglevel lev) {
    }
 }
 
-bool appender::add_basic_file_sink(const std::string &filename, int truncate, loglevel lev) {
+bool SinkAppender::add_basic_file_sink(const std::string &filename, int truncate, loglevel lev) {
    try {
       // create path
       check_create_path(filename);
 
-      file_sink_ = std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename, truncate);
-      file_sink_->set_level(lev);
+     m_file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename, truncate);
+      m_file_sink->set_level(lev);
 
       return true;
    }
@@ -131,13 +131,13 @@ bool appender::add_basic_file_sink(const std::string &filename, int truncate, lo
    }
 }
 
-bool appender::add_rotation_file_sink(const std::string &filename, size_t max_file_size, size_t max_files, loglevel lev) {
+bool SinkAppender::add_rotation_file_sink(const std::string &filename, size_t max_file_size, size_t max_files, loglevel lev) {
    try {
       // create path
       check_create_path(filename);
 
-      rotate_sink_ = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(filename, max_file_size, max_files);
-      rotate_sink_->set_level(lev);
+     m_rotate_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(filename, max_file_size, max_files);
+      m_rotate_sink->set_level(lev);
 
       return true;
    }
@@ -147,13 +147,13 @@ bool appender::add_rotation_file_sink(const std::string &filename, size_t max_fi
    }
 }
 
-bool appender::add_daily_file_sink(const std::string &filename, int hour, int minute, loglevel lev) {
+bool SinkAppender::add_daily_file_sink(const std::string &filename, int hour, int minute, loglevel lev) {
    try {
       // create path
       check_create_path(filename);
 
-      daily_sink_ = std::make_shared<spdlog::sinks::daily_file_sink_mt>(filename, hour, minute);
-      daily_sink_->set_level(lev);
+     m_daily_sink = std::make_shared<spdlog::sinks::daily_file_sink_mt>(filename, hour, minute);
+      m_daily_sink->set_level(lev);
 
       return true;
    }
@@ -163,19 +163,19 @@ bool appender::add_daily_file_sink(const std::string &filename, int hour, int mi
    }
 }
 
-bool appender::add_console_sink(bool to_stderr, bool colored, loglevel lev) {
+bool SinkAppender::add_console_sink(bool to_stderr, bool colored, loglevel lev) {
    try {
 
       if (!to_stderr && colored)
-         console_sink_ = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        m_console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
       else if (!to_stderr)
-         console_sink_ = std::make_shared<spdlog::sinks::stdout_sink_mt>();
+        m_console_sink = std::make_shared<spdlog::sinks::stdout_sink_mt>();
       else if (colored)
-         console_sink_ = std::make_shared<spdlog::sinks::stderr_color_sink_mt>();
+        m_console_sink = std::make_shared<spdlog::sinks::stderr_color_sink_mt>();
       else
-         console_sink_ = std::make_shared<spdlog::sinks::stderr_sink_mt>();
+        m_console_sink = std::make_shared<spdlog::sinks::stderr_sink_mt>();
 
-      console_sink_->set_level(lev);
+      m_console_sink->set_level(lev);
 
       return true;
    }
@@ -185,12 +185,12 @@ bool appender::add_console_sink(bool to_stderr, bool colored, loglevel lev) {
    }
 }
 
-bool appender::add_syslog_sink(const std::string &syslog_ident, int syslog_option, int syslog_facility,
-                             bool enable_formatting, loglevel lev) {
+bool SinkAppender::add_syslog_sink(const std::string &syslog_ident, int syslog_option, int syslog_facility,
+                                   bool enable_formatting, loglevel lev) {
    try {
 
-      syslog_sink_ = std::make_shared<spdlog::sinks::syslog_sink_mt>(syslog_ident, syslog_option, syslog_facility, enable_formatting);
-      syslog_sink_->set_level(lev);
+     m_syslog_sink = std::make_shared<spdlog::sinks::syslog_sink_mt>(syslog_ident, syslog_option, syslog_facility, enable_formatting);
+      m_syslog_sink->set_level(lev);
 
       return true;
    }
@@ -200,14 +200,14 @@ bool appender::add_syslog_sink(const std::string &syslog_ident, int syslog_optio
    }
 }
 
-bool appender::add_rsyslog_sink(const string &ident, const string &rsyslog_ip,  int syslog_facility, loglevel lev,
-                              int port, bool enable_formatting, int log_buffer_max_size) {
+bool SinkAppender::add_rsyslog_sink(const string &ident, const string &rsyslog_ip, int syslog_facility, loglevel lev,
+                                    int port, bool enable_formatting, int log_buffer_max_size) {
    try {
 
-      rsyslog_sink_ = std::make_shared<spdlog::sinks::rsyslog_sink_mt>(ident, rsyslog_ip, syslog_facility, log_buffer_max_size, port,
-                                                                      enable_formatting);
-      rsyslog_sink_->set_pattern("[%Y-%m-%d %H:%M:%S:%e] [%n] [%l] [%P] %@ : %v");
-      rsyslog_sink_->set_level(lev);
+     m_rsyslog_sink = std::make_shared<spdlog::sinks::rsyslog_sink_mt>(ident, rsyslog_ip, syslog_facility, log_buffer_max_size, port,
+                                                                       enable_formatting);
+      m_rsyslog_sink->set_pattern("[%Y-%m-%d %H:%M:%S:%e] [%n] [%l] [%P] %@ : %v");
+      m_rsyslog_sink->set_level(lev);
 
       return true;
    }
@@ -217,21 +217,21 @@ bool appender::add_rsyslog_sink(const string &ident, const string &rsyslog_ip,  
    }
 }
 
-void appender::drop(const std::vector<std::string> &logger_names) {
+void SinkAppender::drop(const std::vector<std::string> &logger_names) {
    for (auto &it : logger_names) {
       spdlog::drop(it);
    }
 }
 
-void appender::drop_all() {
-   spdlog::drop(name_);
+void SinkAppender::drop_all() {
+   spdlog::drop(m_name);
 }
 
 /**
  * check existence and if needs - to create path
  * @param filename - file name
  */
-void appender::check_create_path(const std::string &filename) {
+void SinkAppender::check_create_path(const std::string &filename) {
    // check  create directory
    filesys::path f(filename);
    /// create path to log files

@@ -8,14 +8,14 @@
 
 /*************************************************************************//**
  * \file    baseAppender.hh
- * \brief   contains base class appender.
+ * \brief   contains base class SinkAppender.
  * \author  Alexander Sacharov
  * \date    2022-01-06
  * \ingroup
  *****************************************************************************/
 
-#ifndef E493B327_014E_42AC_A059_3A9AED54DFA6
-#define E493B327_014E_42AC_A059_3A9AED54DFA6
+#ifndef __INCLUDE_CPPSL_FILE_FILE_APPENDER_BASE_H__
+#define __INCLUDE_CPPSL_FILE_FILE_APPENDER_BASE_H__
 
 //-----------------------------------------------------------------------------
 // includes <...>
@@ -30,7 +30,7 @@
 //-----------------------------------------------------------------------------
 // includes "..."
 //-----------------------------------------------------------------------------
-#include <cppsl/log/anylog.h>
+#include <cppsl/log/some_withlog.h>
 
 //----------------------------------------------------------------------------
 // Public defines and macros
@@ -54,23 +54,23 @@ namespace cppsl::file {
 
   /// @class
   ///
-  /// @brief File appender
+  /// @brief File SinkAppender
   ///
   /// @details
   ///
   /// @author Alexander Sacharov (AS)
   /// @date   2015/03/13
 
-  class filebase_appender : cppsl::log::anylog {
+  class filebase_appender : cppsl::log::SomeWithLog {
    public:
 
     /// Constructs a base_file_appender.
     /// \param logPtr - shared pointer to log
-    /// \param filePath the name of the file to which the Appender has to log.
-    /// \param append whether the Appender has to truncate the file or just append
+    /// \param filePath the name of the file to which the SinkAppender has to log.
+    /// \param append whether the SinkAppender has to truncate the file or just append
     /// to it if it already exists. Defaults to 'true'.
     /// \param mode file mode to open the logfile with. Defaults to ( _S_IREAD | _S_IWRITE ).
-    filebase_appender(std::shared_ptr<cppsl::log::appender> logPtr,
+    filebase_appender(std::shared_ptr<cppsl::log::SinkAppender> logPtr,
                       const cppsl::file::fs::path &filePath,
                       bool append = true,
                       int mode = BitsAccessPermissions);
@@ -123,4 +123,4 @@ namespace cppsl::file {
 
 }  // end namespace cppsl::file
 
-#endif /* E493B327_014E_42AC_A059_3A9AED54DFA6 */
+#endif /* __INCLUDE_CPPSL_FILE_FILE_APPENDER_BASE_H__ */

@@ -7,26 +7,25 @@
 //
 
 /*************************************************************************//**
- * \file   anyWithLog.hpp
- * \brief  contains any class with log.
+ * \file   SomeWithLog.h
+ * \brief  contains any with log.
  * \author Alexander Sacharov
  * \date    2022-01-07
  * \ingroup
  *****************************************************************************/
 
-#ifndef F2762122_51B0_43FF_AE35_3A9F7B864965
-#define F2762122_51B0_43FF_AE35_3A9F7B864965
+#ifndef __INCLUDE_CPPSL_LOG_SOME_WITHLOG_H__
+#define __INCLUDE_CPPSL_LOG_SOME_WITHLOG_H__
 
 //-----------------------------------------------------------------------------
 // includes <...>
 //-----------------------------------------------------------------------------
-
 #include <memory>
 
 //-----------------------------------------------------------------------------
 // includes "..."
 //-----------------------------------------------------------------------------
-#include <cppsl/log/appender.h>
+#include <cppsl/log/sink_appender.h>
 
 //----------------------------------------------------------------------------
 // Public defines and macros
@@ -41,28 +40,27 @@
 //----------------------------------------------------------------------------
 namespace cppsl::log {
 
-  /** cppsl::XmlFileWizard
-   *  @brief
-   */
-  class anylog {
-   public:
-    //-------------------------------------
-    // public methods
-    //-------------------------------------
-    /// destructor
-    virtual ~anylog() = default;
+   //
+   /// Class something with log
+   /// Class implements some object with log SinkAppender
+   /// @author Alexander Sacharov
+   //
+   class SomeWithLog {
+    public:
+      /// constructor
+      explicit SomeWithLog(cppsl::logAppenderPtr logPtr) : m_logPtr(logPtr) {}
 
-    /// constructor
-    explicit anylog(cppsl::logAppenderPtr logPtr) : m_logPtr(logPtr) {}
+      /// destructor
+      virtual ~SomeWithLog() = default;
 
-   protected:
-    //-------------------------------------
-    // protected members
-    //-------------------------------------
-    cppsl::logAppenderPtr m_logPtr;        ///< log-pointer
+    protected:
+      //-------------------------------------
+      // protected members
+      //-------------------------------------
+      cppsl::logAppenderPtr m_logPtr;        ///< log-pointer
 
-  };
+   };
 
 } /* namespace cppsl */
 
-#endif /* F2762122_51B0_43FF_AE35_3A9F7B864965 */
+#endif /* __INCLUDE_CPPSL_LOG_SOME_WITHLOG_H__ */

@@ -8,7 +8,7 @@
 
 /*************************************************************************//**
  * \file    baseAppender.cpp
- * \brief   contains base file appender.
+ * \brief   contains base file SinkAppender.
  * \author  Alexander Sacharov
  * \date    2022-01-10
  * \ingroup
@@ -47,9 +47,9 @@ using namespace cppsl::file;
 // Function Definitions
 //----------------------------------------------------------------------------
 
-filebase_appender::filebase_appender(std::shared_ptr<cppsl::log::appender> logPtr, const cppsl::file::fs::path &filePath,
+filebase_appender::filebase_appender(std::shared_ptr<cppsl::log::SinkAppender> logPtr, const cppsl::file::fs::path &filePath,
                                      bool append, int mode)
-   : cppsl::log::anylog(logPtr), m_filePath(filePath), m_flags(O_CREAT | O_APPEND | O_WRONLY), m_mode(mode) {
+   : cppsl::log::SomeWithLog(logPtr), m_filePath(filePath), m_flags(O_CREAT | O_APPEND | O_WRONLY), m_mode(mode) {
    if (!append) {
       m_flags |= O_TRUNC;
    }

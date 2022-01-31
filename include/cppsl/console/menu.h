@@ -14,6 +14,9 @@
  * \ingroup C++ support library
  *****************************************************************************/
 
+#ifndef __INCLUDE_CPPSL_CONSOLE_MENU_H__
+#define __INCLUDE_CPPSL_CONSOLE_MENU_H__
+
 /**
  * \section ex1 Example of use console menu
  *
@@ -39,7 +42,7 @@
 *     // useful stuff here
 *     ...
 *     // push in stack of calls
- *     v.push_back(menu::get_line_from_stream<size_t>("Enter a text ..."));
+ *     v.push_back(menu::GetLineFromStream<size_t>("Enter a text ..."));
  *  }
  *  ...
  *  void menu_func_show(std::any &param) {
@@ -72,7 +75,7 @@
  *  std::any vect_params = std::vector<varVal>{};
  *
  *  // self menu
- *  menu::console_menu consoleMenu{
+ *  menu::ConsoleMenu consoleMenu{
  *     "Test Menu ...", {
  *        { "Test menu 1", menu_func_test1},
  *        { "Test menu 2", menu_func_test2},
@@ -85,9 +88,6 @@
  *  main_menu.menu(vect_params);
  *  ...
  */
-
-#ifndef EA3C8146_3CEF_4C3B_9789_14772CA8FD66
-#define EA3C8146_3CEF_4C3B_9789_14772CA8FD66
 
 //-----------------------------------------------------------------------------
 // includes <...>
@@ -132,7 +132,7 @@ namespace cppsl::console::menu {
    * @param s -std::string to use (not changed)
    * @return updatedstd::string
    */
-  inline std::string trim_whitespaces(const std::string &s) {
+  inline std::string TrimWhiteSpaces(const std::string &s) {
     constexpr char whitespace[] = " \t\n\r";
     const size_t first = s.find_first_not_of(whitespace);
 
@@ -147,8 +147,8 @@ namespace cppsl::console::menu {
    * @return returns either value of converted number or no value if text number cannot be converted
    */
   template<typename T = int>
-  std::optional<T> str_to_number(const std::string &st) {
-    const auto s = trim_whitespaces(st);
+  std::optional<T> StringToNumber(const std::string &st) {
+    const auto s = TrimWhiteSpaces(st);
     bool ok = s.empty() ? false : (std::isdigit(s.front())
        || (((std::is_signed<T>::value && (s.front() == '-')) || (s.front() == '+')) && ((s.size() > 1) && std::isdigit(s[1]))));
 
@@ -170,7 +170,7 @@ namespace cppsl::console::menu {
    * @param def - optional default text if no text entered
    * @return either valid input line or no value if problem obtaining input
    */
-  std::optional<std::string> get_line_from_stream(std::istream &is, const std::string &def = "") {
+  std::optional<std::string> GetLineFromStream(std::istream &is, const std::string &def = "") {
     for (auto no = is.rdbuf()->in_avail(); no && is && std::isspace(is.peek()); is.ignore(), --no);
 
     std::string ln;
@@ -184,7 +184,7 @@ namespace cppsl::console::menu {
    * @param def - optional default text if no text entered
    * @return entered text as typestd::string. No error conditions. Only returns when valid data entered
    */
-  auto get_line_from_stream(const std::string &prm = "", const std::string &def = "") {
+  auto GetLineFromStream(const std::string &prm = "", const std::string &def = "") {
     std::optional<std::string> o;
 
     do {
@@ -193,7 +193,7 @@ namespace cppsl::console::menu {
         std::cout << " [" << def << "]";
 
       std::cout << " :";
-      o = get_line_from_stream(std::cin, def);
+      o = GetLineFromStream(std::cin, def);
     } while (!o.has_value() && (std::cout << "Invalid input" << std::endl));
 
     return *o;
@@ -206,7 +206,7 @@ namespace cppsl::console::menu {
    * @return either the correctly extracted data or no value, if there are problems with data extraction
    */
   template<typename T = std::string>
-  std::optional<T> get_next_item(std::istream &is) {
+  std::optional<T> GetNextItem(std::istream &is) {
     auto i = T{};
     const bool b = (is >> i) && std::isspace(is.peek());
 
@@ -222,13 +222,13 @@ namespace cppsl::console::menu {
    * @return either a valid number of the required type or no value if there are problems during data extraction
    */
   template<typename T = int>
-  auto get_number_from_stream(std::istream &is, bool oneline = true) {
+  auto GetNumberFromStrem(std::istream &is, bool oneline = true) {
     if (oneline) {
-      const auto o = get_line_from_stream(is);
-      return o.has_value() ? str_to_number<T>(*o) : std::optional<T>{};
+      const auto o = GetLineFromStream(is);
+      return o.has_value() ? StringToNumber<T>(*o) : std::optional<T>{};
     }
 
-    return get_next_item<T>(is);
+    return GetNextItem<T>(is);
   }
 
   /**
@@ -243,7 +243,7 @@ namespace cppsl::console::menu {
    * @return
    */
   template<typename T = int>
-  auto get_number_from_stream(const std::string &prm = "",
+  auto GetNumberFromStrem(const std::string &prm = "",
                               T nmin = std::numeric_limits<T>::lowest(),
                               T nmax = std::numeric_limits<T>::max(),
                               bool oneline = true) {
@@ -271,7 +271,7 @@ namespace cppsl::console::menu {
 
       std::cout << " :";
 
-      o = get_number_from_stream<T>(std::cin, oneline);
+      o = GetNumberFromStrem<T>(std::cin, oneline);
     } while ((!o.has_value() || (((*o < nmin) || (*o > nmax)))) && (std::cout << "Invalid input" << std::endl));
 
     return *o;
@@ -284,15 +284,15 @@ namespace cppsl::console::menu {
    * @param  oneline - true if only one char per line (default), false if can have multiple chars per line
    * @return either valid character or no value if problem extracting data
    */
-  std::optional<char> get_char_stream(std::istream &is, char def = 0, bool oneline = true) {
+  std::optional<char> GetCharFromStream(std::istream &is, char def = 0, bool oneline = true) {
     if (oneline) {
-      if (auto o = get_line_from_stream(is); o.has_value())
+      if (auto o = GetLineFromStream(is); o.has_value())
         return (o->empty() && def ? def : ((o->size() == 1) ? o->front() : std::optional<char>{}));
       else
         return {};
     }
 
-    return get_next_item<char>(is);
+    return GetNextItem<char>(is);
   }
 
   /**
@@ -303,7 +303,7 @@ namespace cppsl::console::menu {
    * @param  oneline - true if only one char per line (default), false if can have multiple chars per line
    * @return returns valid char. No error conditions. Only returns when valid char entered
    */
-  auto get_char_console(const std::string &prm = "", const std::string &valid = "", char def = 0, bool oneline = true) {
+  auto GetCharFromConsole(const std::string &prm = "", const std::string &valid = "", char def = 0, bool oneline = true) {
     const auto showopt = [&valid, def]() {
       std::cout << " (";
 
@@ -325,7 +325,7 @@ namespace cppsl::console::menu {
         showopt();
 
       std::cout << " :";
-      o = get_char_stream(std::cin, def, oneline);
+      o = GetCharFromStream(std::cin, def, oneline);
     } while ((!o.has_value() || ((!valid.empty()) && (valid.find(*o) == std::string::npos))) &&
        (std::cout << "\nInvalid input!" << std::endl));
 
@@ -349,19 +349,19 @@ namespace cppsl::console::menu {
    * The two types are mandatory in the vector show_menu, therefore f_type and enu*. See struct menu_item.
    *
    */
-  class console_menu {
+  class ConsoleMenu {
    private:
     using func_type = void (*)(std::any &param);
 
     struct menu_item {
       std::string name;
-      std::variant<func_type, console_menu *> func;
+      std::variant<func_type, ConsoleMenu *> func;
     };
 
    public:
-    console_menu() {}
+    ConsoleMenu() {}
 
-    console_menu(const std::string &t, const std::vector<menu_item> &vm) : m_title(t), m_items(vm) {}
+    ConsoleMenu(const std::string &t, const std::vector<menu_item> &vm) : m_title(t), m_items(vm) {}
 
     auto title() const noexcept {
       return m_title;
@@ -404,8 +404,8 @@ namespace cppsl::console::menu {
      * @param m - console menu
      * @param param - parameter in console menu
      */
-    void show_menu(const console_menu &m, std::any &param) {
-      const auto show = [nom = m.m_items.size()](const console_menu &mu) {
+    void show_menu(const ConsoleMenu &m, std::any &param) {
+      const auto show = [nom = m.m_items.size()](const ConsoleMenu &mu) {
         std::ostringstream oss;
 
         oss << mu.title() << std::endl;
@@ -416,14 +416,14 @@ namespace cppsl::console::menu {
 
         oss << "0)  Exit menu\n\n"
                "Enter menu option number";
-        return get_number_from_stream<size_t>(oss.str(), 0, nom);
+        return GetNumberFromStrem<size_t>(oss.str(), 0, nom);
       };
 
       for (size_t opt = 0U; (opt = show(m)) > 0;)
-        if (const auto &mi = m.m_items[opt - 1]; std::holds_alternative<console_menu::func_type>(mi.func))
-          std::get<console_menu::func_type>(mi.func)(param);
+        if (const auto &mi = m.m_items[opt - 1]; std::holds_alternative<ConsoleMenu::func_type>(mi.func))
+          std::get<ConsoleMenu::func_type>(mi.func)(param);
         else
-          show_menu(*std::get<console_menu *>(mi.func), param);
+          show_menu(*std::get<ConsoleMenu *>(mi.func), param);
     }
 
     std::string m_title;
@@ -432,4 +432,4 @@ namespace cppsl::console::menu {
 
 }// namespace cppsl::console::menu
 
-#endif /* EA3C8146_3CEF_4C3B_9789_14772CA8FD66 */
+#endif /* __INCLUDE_CPPSL_CONSOLE_MENU_H__ */
