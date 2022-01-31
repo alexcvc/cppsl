@@ -55,7 +55,7 @@ set(${LIBRARY_TARGET_NAME}_HDR
         "log/some_withlog.h"
         "log/log4c.h"
         "log/sink_appender.h"
-        "../../include/cppsl/sys/byteswap.h"
+        "sys/endian.h"
         "../../include/cppsl/time/timer_interval.h"
         "../../include/cppsl/threading/delegate_base.h"
         "../../include/cppsl/threading/delegate.h"

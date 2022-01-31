@@ -12,8 +12,8 @@
  * \date        2021-07-28
  *****************************************************************************/
 
-#ifndef B8546381_04BA_43FD_B361_0B6AA07FF0A0
-#define B8546381_04BA_43FD_B361_0B6AA07FF0A0
+#ifndef __INCLUDE_CPPSL_LOG_DETAILS_RSYSLOG_SINK_H__
+#define __INCLUDE_CPPSL_LOG_DETAILS_RSYSLOG_SINK_H__
 
 //-----------------------------------------------------------------------------
 // includes <...>
@@ -207,4 +207,4 @@ namespace spdlog {
 
 } // namespace spdlog
 
-#endif /* B8546381_04BA_43FD_B361_0B6AA07FF0A0 */
+#endif /* __INCLUDE_CPPSL_LOG_DETAILS_RSYSLOG_SINK_H__ */

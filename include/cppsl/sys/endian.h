@@ -14,8 +14,8 @@
  * \ingroup
  *****************************************************************************/
 
-#ifndef F9422AC2_6FD6_43A2_B11F_E649B88AF537
-#define F9422AC2_6FD6_43A2_B11F_E649B88AF537
+#ifndef __INCLUDE_CPPSL_SYS_ENDIAN_H__
+#define __INCLUDE_CPPSL_SYS_ENDIAN_H__
 
 //-----------------------------------------------------------------------------
 // includes <...>
@@ -41,8 +41,8 @@
 //----------------------------------------------------------------------------
 
 namespace cppsl::sys {
-  /// host endian
-  enum class endian {
+  /// host ByteOrder
+  enum class ByteOrder {
     little_endian,
     big_endian,
     network_endian = big_endian,
@@ -128,7 +128,7 @@ namespace cppsl::sys {
       }
     };
 
-    template<endian from, endian to, class T>
+    template<ByteOrder from, ByteOrder to, class T>
     struct do_swap {
       inline T operator()(T value) {
         return swap<T, sizeof(T)>()(value);
@@ -139,11 +139,11 @@ namespace cppsl::sys {
 
     // little -> little
     template<class T>
-    struct do_swap<endian::little_endian, endian::little_endian, T> { inline T operator()(T value) { return value; }};
+    struct do_swap<ByteOrder::little_endian, ByteOrder::little_endian, T> { inline T operator()(T value) { return value; }};
 
     // big -> big
     template<class T>
-    struct do_swap<endian::big_endian, endian::big_endian, T> { inline T operator()(T value) { return value; }};
+    struct do_swap<ByteOrder::big_endian, ByteOrder::big_endian, T> { inline T operator()(T value) { return value; }};
 
   } // namespace detail
 
@@ -163,7 +163,7 @@ namespace cppsl::sys {
   /// swap from to byte ordering
   /// \tparam T 
   /// \param value 
-  template<endian from, endian to, class T>
+  template<ByteOrder from, ByteOrder to, class T>
   inline T byteswap(T value) {
     // ensure the data is only 1, 2, 4 or 8 bytes
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8, "data is only 1, 2, 4 or 8 bytes");
@@ -175,7 +175,7 @@ namespace cppsl::sys {
 }  // namespace cppsl::sys
 
 namespace cppsl {
-  using endiannes = cppsl::sys::endian;
+  using endiannes = cppsl::sys::ByteOrder;
 } // end of cppsl
 
-#endif /* F9422AC2_6FD6_43A2_B11F_E649B88AF537 */
+#endif /* __INCLUDE_CPPSL_SYS_ENDIAN_H__ */

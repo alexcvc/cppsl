@@ -8,7 +8,7 @@
 #include <bit>
 #include <iostream>
 #include <iomanip>
-#include <cppsl/sys/byteswap.h>
+#include <cppsl/sys/endian.h>
 
 using namespace cppsl::sys;
 namespace bytes = cppsl::sys;
@@ -73,13 +73,13 @@ int main() {
   std::cout << "\nbyteswap for double:\n";
   constexpr auto d = double{0.1234567890123456789};
   dump(d);
-  dump(bytes::byteswap<bytes::endian::little_endian, bytes::endian::big_endian>(d));
+  dump(bytes::byteswap<bytes::ByteOrder::little_endian, bytes::ByteOrder::big_endian>(d));
 
   std::cout << "\nbyteswap to host byte ordering:\n";
-  dump(bytes::byteswap<bytes::endian::little_endian, bytes::endian::host_endian>(d));
+  dump(bytes::byteswap<bytes::ByteOrder::little_endian, bytes::ByteOrder::host_endian>(d));
 
   std::cout << "\nbyteswap to network byte ordering:\n";
-  dump(bytes::byteswap<bytes::endian::little_endian, bytes::endian::network_endian>(d));
+  dump(bytes::byteswap<bytes::ByteOrder::little_endian, bytes::ByteOrder::network_endian>(d));
 
   std::cout << "\nbyteswap always:\n";
   dump(bytes::byteswap(d));

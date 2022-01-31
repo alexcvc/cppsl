@@ -15,7 +15,7 @@
 */
 
 /*************************************************************************//**
- * \file        Delegate.hpp
+ * \file        delegate.h
  * \brief       The Delegate type is used to store in the queue, and reflects
  * the profile of the synchronization object and its thread.
  * A synchronization-based Delegate instance is passed as the first parameter
