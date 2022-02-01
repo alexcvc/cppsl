@@ -28,7 +28,7 @@ BraceWrapping:
   BeforeElse: false
   IndentBraces: false
   SplitEmptyFunction: false
-  SplitEmptyRecord: false
+  SplitEmptyRecord: true
 BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeColon
