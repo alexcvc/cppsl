@@ -47,8 +47,8 @@ using namespace cppsl::file;
 // Function Definitions
 //----------------------------------------------------------------------------
 
-filebase_appender::filebase_appender(std::shared_ptr<cppsl::log::SinkAppender> logPtr, const cppsl::file::fs::path &filePath,
-                                     bool append, int mode)
+FilebaseAppender::FilebaseAppender(std::shared_ptr<cppsl::log::SinkAppender> logPtr, const cppsl::file::fs::path &filePath,
+                                   bool append, int mode)
    : cppsl::log::SomeWithLog(logPtr), m_filePath(filePath), m_flags(O_CREAT | O_APPEND | O_WRONLY), m_mode(mode) {
    if (!append) {
       m_flags |= O_TRUNC;
@@ -69,16 +69,16 @@ filebase_appender::filebase_appender(std::shared_ptr<cppsl::log::SinkAppender> l
    }
 }
 
-filebase_appender::~filebase_appender() { closeFile(); }
+FilebaseAppender::~FilebaseAppender() { closeFile(); }
 
-void filebase_appender::closeFile() {
+void FilebaseAppender::closeFile() {
    if (m_fd != -1) {
       close(m_fd);
       m_fd = -1;
    }
 }
 
-void filebase_appender::setAppend(bool append) {
+void FilebaseAppender::setAppend(bool append) {
    if (append) {
       m_flags &= ~O_TRUNC;
    }
@@ -87,14 +87,14 @@ void filebase_appender::setAppend(bool append) {
    }
 }
 
-bool filebase_appender::getAppend() const { return (m_flags & O_TRUNC) == 0; }
+bool FilebaseAppender::getAppend() const { return (m_flags & O_TRUNC) == 0; }
 
-void filebase_appender::setMode(int mode) { m_mode = mode; }
+void FilebaseAppender::setMode(int mode) { m_mode = mode; }
 
-int filebase_appender::getMode() const { return m_mode; }
+int FilebaseAppender::getMode() const { return m_mode; }
 
 /// append new event
-void filebase_appender::writeMessage(const std::string &message) {
+void FilebaseAppender::writeMessage(const std::string &message) {
    if (m_fd != -1) {
       if (!write(m_fd, message.data(), (unsigned int) message.length())) {
          cerr << "Write message to event-Log file failed" << endl;
@@ -106,7 +106,7 @@ void filebase_appender::writeMessage(const std::string &message) {
 }
 
 /// reopen file
-bool filebase_appender::reopenFile() {
+bool FilebaseAppender::reopenFile() {
    if (!m_filePath.empty()) {
       int fd = open(m_filePath.string().c_str(), m_flags, m_mode);
       if (fd < 0) {

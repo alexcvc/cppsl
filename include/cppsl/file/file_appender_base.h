@@ -61,7 +61,7 @@ namespace cppsl::file {
   /// @author Alexander Sacharov (AS)
   /// @date   2015/03/13
 
-  class filebase_appender : cppsl::log::SomeWithLog {
+  class FilebaseAppender : cppsl::log::SomeWithLog {
    public:
 
     /// Constructs a base_file_appender.
@@ -70,12 +70,12 @@ namespace cppsl::file {
     /// \param append whether the SinkAppender has to truncate the file or just append
     /// to it if it already exists. Defaults to 'true'.
     /// \param mode file mode to open the logfile with. Defaults to ( _S_IREAD | _S_IWRITE ).
-    filebase_appender(std::shared_ptr<cppsl::log::SinkAppender> logPtr,
-                      const cppsl::file::fs::path &filePath,
-                      bool append = true,
-                      int mode = BitsAccessPermissions);
+    FilebaseAppender(std::shared_ptr<cppsl::log::SinkAppender> logPtr,
+                     const cppsl::file::fs::path &filePath,
+                     bool append = true,
+                     int mode = BitsAccessPermissions);
 
-    virtual ~filebase_appender();
+    virtual ~FilebaseAppender();
 
     /// get file path
     const cppsl::file::fs::path &getFilePath() const { return m_filePath; }

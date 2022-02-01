@@ -1,2 +1,2 @@
-add_subdirectory(example_byteswap)
+add_subdirectory(byteswap)
 add_subdirectory(jthread)

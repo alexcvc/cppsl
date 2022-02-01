@@ -28,8 +28,8 @@
  * \date        2021-10-24
  *****************************************************************************/
 
-#ifndef FBD1FFCB_9AD2_49DE_9E83_A5212FE3F926
-#define FBD1FFCB_9AD2_49DE_9E83_A5212FE3F926
+#ifndef __INCLUDE_CPPSL_THREADING_DELEGATE_H__
+#define __INCLUDE_CPPSL_THREADING_DELEGATE_H__
 
 //-----------------------------------------------------------------------------
 // includes <...>
@@ -157,4 +157,4 @@ namespace cppsl::threading {
 
 } /* namespace cppsl::threading */
 
-#endif /* FBD1FFCB_9AD2_49DE_9E83_A5212FE3F926 */
+#endif /* __INCLUDE_CPPSL_THREADING_DELEGATE_H__ */

@@ -55,14 +55,14 @@ namespace cppsl::file {
   /// @author Alexander Sacharov (AS)
   /// @date   2015/03/13
 
-  class fileroll_appender : public filebase_appender {
+  class FilerollAppender : public FilebaseAppender {
    public:
-    fileroll_appender(std::shared_ptr<cppsl::log::SinkAppender> logPtr,
-                      const cppsl::file::fs::path &filePath,
-                      size_t maxFileSize = MaxRollFileAppenderSize,
-                      unsigned int maxBackupIndex = MaxRollFileAppenderBackIndex,
-                      bool append = true,
-                      int mode = BitsAccessPermissions);
+    FilerollAppender(std::shared_ptr<cppsl::log::SinkAppender> logPtr,
+                     const cppsl::file::fs::path &filePath,
+                     size_t maxFileSize = MaxRollFileAppenderSize,
+                     unsigned int maxBackupIndex = MaxRollFileAppenderBackIndex,
+                     bool append = true,
+                     int mode = BitsAccessPermissions);
 
     virtual void setMaxBackupIndex(unsigned int maxBackups);
 

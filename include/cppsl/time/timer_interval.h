@@ -7,46 +7,20 @@
 //
 
 /*************************************************************************//**
- * \file    tnterval_timer.h
+ * \file    timer_interval.h
  * \brief   contains .
  * \author  Alexander Sacharov
  * \date    2022-01-30
  * \ingroup
  *****************************************************************************/
 
-//-----------------------------------------------------------------------------
-// includes <...>
-//-----------------------------------------------------------------------------
+#ifndef __INCLUDE_CPPSL_TIME_TIMER_INTERVAL_H__
+#define __INCLUDE_CPPSL_TIME_TIMER_INTERVAL_H__
 
 //-----------------------------------------------------------------------------
-// includes "..."
-//-----------------------------------------------------------------------------
-
-//----------------------------------------------------------------------------
-// Public defines and macros
-//----------------------------------------------------------------------------
-
-//----------------------------------------------------------------------------
-// Public typedefs, structs, enums, unions and variables
-//----------------------------------------------------------------------------
-
-//----------------------------------------------------------------------------
-// Public Function Prototypes
-//----------------------------------------------------------------------------
-
-
-
-#ifndef D32E958A_4A3F_44DB_9095_E73C222B8679
-#define D32E958A_4A3F_44DB_9095_E73C222B8679
-
-//-----------------------------------------------------------------------------
-// includes <...>
+// includes
 //-----------------------------------------------------------------------------
 #include <chrono>
-
-//-----------------------------------------------------------------------------
-// includes "..."
-//-----------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------
 // Public defines and macros
@@ -62,7 +36,7 @@
 
 using namespace std::chrono;
 
-namespace tmq4::time {
+namespace cppsl::time {
 
 inline std::chrono::high_resolution_clock::time_point TimeNow() {
    return std::chrono::high_resolution_clock::now();
@@ -87,8 +61,7 @@ static
 #if defined(__GNUC__)
    __attribute__((used))
 #endif
-   void
-   to_timeval(const system_clock::time_point& tp, timeval& tv) {
+   void to_timeval(const system_clock::time_point& tp, timeval& tv) {
    auto s = std::chrono::time_point_cast<seconds>(tp);
    if (s > tp) s = s - seconds{1};
    auto us = std::chrono::duration_cast<microseconds>(tp - s);
@@ -101,8 +74,7 @@ static
 #if defined(__GNUC__)
    __attribute__((used))
 #endif
-   void
-   to_time_point(const timeval& tv, system_clock::time_point& dest) {
+   void to_time_point(const timeval& tv, system_clock::time_point& dest) {
    dest = std::chrono::system_clock::time_point{seconds{tv.tv_sec} + microseconds{tv.tv_usec}};
 }
 
@@ -124,7 +96,7 @@ public:
        : m_timeoutValue(ms), m_startingTimePoint(std::chrono::steady_clock::now()), m_isStopwatchRunning(false) {}
 
    /// timer_reply has been started (pushed)
-   bool is_running() const {
+   bool IsRunning() const {
       return m_isStopwatchRunning;
    }
 
@@ -142,7 +114,7 @@ public:
    }
 
    /// start timer_reply
-   std::chrono::steady_clock::time_point start_for(std::chrono::milliseconds& ms) {
+   std::chrono::steady_clock::time_point startFor(std::chrono::milliseconds& ms) {
       m_timeoutValue = ms;
       m_startingTimePoint = std::chrono::steady_clock::now();
       m_isStopwatchRunning = true;
@@ -150,17 +122,17 @@ public:
    }
 
    /// elapsed timeout since start
-   std::chrono::microseconds has_elapsedUs() {
+   std::chrono::microseconds hasElapsedUs() {
       return IntervalMks(std::chrono::steady_clock::now(), m_startingTimePoint);
    }
 
    /// elapsed timeout since start
-   std::chrono::milliseconds has_elapsedMs() {
+   std::chrono::milliseconds hasElapsedMs() {
       return IntervalMs(std::chrono::steady_clock::now(), m_startingTimePoint);
    }
 
    /// elapsed timeout since start
-   std::chrono::seconds has_elapsedSec() {
+   std::chrono::seconds hasElapsedSec() {
       return IntervalSec(std::chrono::steady_clock::now(), m_startingTimePoint);
    }
 
@@ -202,7 +174,7 @@ public:
          return true;
       }
       else {
-         return (has_elapsedMs() > m_timeoutValue) ? true : false;
+         return (hasElapsedMs() > m_timeoutValue) ? true : false;
       }
    }
 
@@ -217,7 +189,6 @@ private:
    bool m_isStopwatchRunning{false};
 };
 
-}// namespace tmq4::time
+}// namespace cppsl::time
 
-
-#endif /* D32E958A_4A3F_44DB_9095_E73C222B8679 */
+#endif /* __INCLUDE_CPPSL_TIME_TIMER_INTERVAL_H__ */

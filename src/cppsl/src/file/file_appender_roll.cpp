@@ -40,13 +40,13 @@ using namespace cppsl::file;
 /// @param     bool append
 /// @param     int mode
 
-fileroll_appender::fileroll_appender(std::shared_ptr<cppsl::log::SinkAppender> logPtr,
-                                     const cppsl::file::fs::path   &filePath,
-                                     size_t                          maxFileSize,
-                                     unsigned int                    maxBackupIndex,
-                                     bool                            append /*= true*/,
-                                     int                             mode /*( _S_IREAD | _S_IWRITE ) */) :
-   filebase_appender(logPtr, filePath, append, mode),
+FilerollAppender::FilerollAppender(std::shared_ptr<cppsl::log::SinkAppender> logPtr,
+                                   const cppsl::file::fs::path   &filePath,
+                                   size_t                          maxFileSize,
+                                   unsigned int                    maxBackupIndex,
+                                   bool                            append /*= true*/,
+                                   int                             mode /*( _S_IREAD | _S_IWRITE ) */) :
+   FilebaseAppender(logPtr, filePath, append, mode),
    m_maxBackupIndex(maxBackupIndex > 0 ? maxBackupIndex : 1),
    m_maxBackupIndexWidth((m_maxBackupIndex > 0) ? (unsigned short) log10((float) m_maxBackupIndex) + 1 : 1),
    m_maxFileSize(maxFileSize) {
@@ -62,20 +62,20 @@ fileroll_appender::fileroll_appender(std::shared_ptr<cppsl::log::SinkAppender> l
 /// Qualifier
 /// @param     unsigned int maxBackups
 
-void fileroll_appender::setMaxBackupIndex(unsigned int maxBackups) {
+void FilerollAppender::setMaxBackupIndex(unsigned int maxBackups) {
    m_maxBackupIndex = maxBackups;
    m_maxBackupIndexWidth = (m_maxBackupIndex > 0) ? (unsigned short) log10((float) m_maxBackupIndex) + 1 : 1;
 }
 
-unsigned int fileroll_appender::getMaxBackupIndex() const {
+unsigned int FilerollAppender::getMaxBackupIndex() const {
    return m_maxBackupIndex;
 }
 
-void fileroll_appender::setMaximumFileSize(size_t maxFileSize) {
+void FilerollAppender::setMaximumFileSize(size_t maxFileSize) {
    m_maxFileSize = maxFileSize;
 }
 
-size_t fileroll_appender::getMaxFileSize() const {
+size_t FilerollAppender::getMaxFileSize() const {
    return m_maxFileSize;
 }
 
@@ -87,7 +87,7 @@ size_t fileroll_appender::getMaxFileSize() const {
 /// Access     virtual public
 /// @return    void
 /// Qualifier
-void fileroll_appender::rollOver() {
+void FilerollAppender::rollOver() {
    close(m_fd);
    if (m_maxBackupIndex > 0) {
       // stream
@@ -116,8 +116,8 @@ void fileroll_appender::rollOver() {
    m_fd = open(m_filePath.string().c_str(), m_flags, m_mode);
 }
 
-void fileroll_appender::writeMessage(const std::string &message) {
-   filebase_appender::writeMessage(message);
+void FilerollAppender::writeMessage(const std::string &message) {
+   FilebaseAppender::writeMessage(message);
 
    off_t offset = lseek(m_fd, 0, SEEK_END);
    if (offset < 0) {
