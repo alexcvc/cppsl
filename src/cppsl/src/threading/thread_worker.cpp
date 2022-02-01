@@ -146,7 +146,7 @@ void ThreadWorker::exit_thread_func(void *pvThis) {
 
 /// Returns true if the thread was successfully started, false if there was an error starting the thread
 /// realtime priority (1 = low, 99 = max)
-bool ThreadWorker::start_detached(driving_state howToDrive, int realtimePriority) {
+bool ThreadWorker::startDetached(driving_state howToDrive, int realtimePriority) {
    pthread_attr_t attr;
 
    pthread_attr_init(&attr);
@@ -207,7 +207,7 @@ bool ThreadWorker::start_detached(driving_state howToDrive, int realtimePriority
 
 /// Returns true if the thread was successfully started, false if there was an error starting the thread
 /// realtime priority (1 = low, 99 = max)
-bool ThreadWorker::start_joinable(driving_state howToDrive, int realtimePriority) {
+bool ThreadWorker::startJoinable(driving_state howToDrive, int realtimePriority) {
    pthread_attr_t attr;
 
    pthread_attr_init(&attr);

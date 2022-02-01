@@ -20,8 +20,8 @@
  * \date        2021-10-24
  *****************************************************************************/
 
-#ifndef C4B7D4ED_1C1B_4825_879B_F02919F82E03
-#define C4B7D4ED_1C1B_4825_879B_F02919F82E03
+#ifndef __INCLUDE_CPPSL_THREADING_INTERLOCK_PROPERTY_H__
+#define __INCLUDE_CPPSL_THREADING_INTERLOCK_PROPERTY_H__
 
 //-----------------------------------------------------------------------------
 // includes <...>
@@ -87,12 +87,12 @@ namespace cppsl::threading {
         this->m_value = *value;
     }
 
-    std::mutex m_uniqueMutex;
-    std::mutex *m_mutex;
-    T m_value;
+    std::mutex  m_uniqueMutex;    ///< unique private fail back mutex
+    std::mutex  *m_mutex;         ///< mutex
+    T           m_value;          ///< self value
 
   };
 
 } /* namespace cppsl::threading */
 
-#endif /* C4B7D4ED_1C1B_4825_879B_F02919F82E03 */
+#endif /* __INCLUDE_CPPSL_THREADING_INTERLOCK_PROPERTY_H__ */

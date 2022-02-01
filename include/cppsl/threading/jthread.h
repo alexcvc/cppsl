@@ -18,8 +18,8 @@
  * \ingroup Threading
  *****************************************************************************/
 
-#ifndef DA7A4988_DEB1_4AA1_9C88_5F756805A1DB
-#define DA7A4988_DEB1_4AA1_9C88_5F756805A1DB
+#ifndef __INCLUDE_CPPSL_THREADING_JTHREAD_H__
+#define __INCLUDE_CPPSL_THREADING_JTHREAD_H__
 
 //-----------------------------------------------------------------------------
 // includes <...>
@@ -127,4 +127,4 @@ namespace cppsl::threading {
 
 } //namespace cppsl::threading
 
-#endif /* DA7A4988_DEB1_4AA1_9C88_5F756805A1DB */
+#endif /* __INCLUDE_CPPSL_THREADING_JTHREAD_H__ */

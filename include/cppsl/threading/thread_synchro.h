@@ -21,8 +21,8 @@
  * \date        2021-10-24
  *****************************************************************************/
 
-#ifndef B43F8E70_ECFE_4125_83CB_6E44E220E3F8
-#define B43F8E70_ECFE_4125_83CB_6E44E220E3F8
+#ifndef __CPPSL_INCLUDE_CPPSL_THREADING_THREAD_SYNCHRO_H__
+#define __CPPSL_INCLUDE_CPPSL_THREADING_THREAD_SYNCHRO_H__
 
 // In an application create a derived class and overrides the virtual function
 //  ThreadWrapper::Body. When the instance is already constructed, the thread
@@ -211,4 +211,4 @@ namespace cppsl::threading {
 
 } // namespace cppsl::threading
 
-#endif /* B43F8E70_ECFE_4125_83CB_6E44E220E3F8 */
+#endif /* __CPPSL_INCLUDE_CPPSL_THREADING_THREAD_SYNCHRO_H__ */

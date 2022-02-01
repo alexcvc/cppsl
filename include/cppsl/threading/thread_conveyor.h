@@ -20,8 +20,8 @@
  * \date        2021-10-24
  *****************************************************************************/
 
-#ifndef AAC4E950_759E_4CB0_BA18_F7DE1C46C859
-#define AAC4E950_759E_4CB0_BA18_F7DE1C46C859
+#ifndef __INCLUDE_CPPSL_THREADING_THREAD_CONVEYOR_H__
+#define __INCLUDE_CPPSL_THREADING_THREAD_CONVEYOR_H__
 
 //-----------------------------------------------------------------------------
 // includes <...>
@@ -47,6 +47,8 @@ namespace cppsl::threading {
    template<typename Parameter_T>
    class ThreadConveyor : public ThreadWrapper {
     public:
+      using DelegatedSync = cppsl::threading::Delegate<void(bool)>;
+      using DelegatedTask = cppsl::threading::Delegate<void(DelegatedSync &, Parameter_T)>;
 
       ThreadConveyor() {
         ThreadWrapper::initialize_synchronization_delegate(m_syncDelegate, this);
@@ -62,13 +64,10 @@ namespace cppsl::threading {
         }
       };
 
-      using DelegatedSync = cppsl::threading::Delegate<void(bool)>;
-      using DelegatedTask = cppsl::threading::Delegate<void(DelegatedSync &, Parameter_T)>;
-
       /// enqueue task
       void push_in_queue(DelegatedTask &task, Parameter_T argument) {
         std::lock_guard<std::mutex> lock(m_queueMutex);
-        m_queue.push(new queue_item(task, argument));
+        m_queue.push(new TaskItem(task, argument));
         m_queueCondition.notify_one();
       }
 
@@ -84,6 +83,8 @@ namespace cppsl::threading {
         set_abort(true, depth == abort_depth::currentTask);
       }
 
+    public:
+      // public member
       cppsl::threading::Delegate<void(const Parameter_T &)> currentTaskAborted;
 
     protected:
@@ -100,7 +101,7 @@ namespace cppsl::threading {
       /// thread function for thread conveyor
       void thread_function() override final {
         while (true) {
-          queue_item task;
+          TaskItem task;
           // get
           getTask(task);
 
@@ -115,14 +116,11 @@ namespace cppsl::threading {
       }
 
     private:
+      /// task item in queue
+      struct TaskItem {
+        TaskItem() = default;
 
-      /// delegeted
-      DelegatedSync m_syncDelegate;
-
-      struct queue_item {
-        queue_item() = default;
-
-        queue_item(DelegatedTask &del, Parameter_T param) {
+        TaskItem(DelegatedTask &del, Parameter_T param) {
           Delegate = &del;
           parameter = param;
         } //QueueItem
@@ -130,12 +128,12 @@ namespace cppsl::threading {
         Parameter_T parameter;
       }; //struct QueueItem
 
-      std::queue<queue_item *> m_queue;            // queue task item
-      std::condition_variable m_queueCondition;
-      std::mutex m_queueMutex;
+
+      /// delegeted
+      DelegatedSync m_syncDelegate;
 
       /// get task from front
-      void getTask(queue_item &itemCopy) {
+      void getTask(TaskItem &itemCopy) {
         std::unique_lock<std::mutex> ul(m_queueMutex);
         m_queueCondition.wait(ul, [=] {
           return m_queue.size() > 0;
@@ -147,8 +145,13 @@ namespace cppsl::threading {
         delete front;
       }
 
+      std::queue<TaskItem *> m_queue;           ///< queue task item
+      std::condition_variable m_queueCondition;   ///< queue condition
+      std::mutex m_queueMutex;                    ///< queue mutex
+
+
    };
 
 } /* namespace cppsl::threading */
 
-#endif /* AAC4E950_759E_4CB0_BA18_F7DE1C46C859 */
+#endif /* __INCLUDE_CPPSL_THREADING_THREAD_CONVEYOR_H__ */
