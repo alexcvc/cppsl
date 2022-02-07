@@ -72,10 +72,10 @@
  *  ...
  *  printf("Open test Menu\n");
  *
- *  std::any vect_params = std::vector<varVal>{};
+ *  std::any menu_item_container = std::vector<varVal>{};
  *
  *  // self menu
- *  menu::ConsoleMenu consoleMenu{
+ *  menu::MenuDriver consoleMenu{
  *     "Test Menu ...", {
  *        { "Test menu 1", menu_func_test1},
  *        { "Test menu 2", menu_func_test2},
@@ -85,7 +85,7 @@
  *
  *  // view menu
  *  // Remark (mail remains in menu up to exit from menu)
- *  main_menu.menu(vect_params);
+ *  main_menu.run(menu_item_container);
  *  ...
  */
 
@@ -132,7 +132,7 @@ namespace cppsl::console::menu {
    * @param s -std::string to use (not changed)
    * @return updatedstd::string
    */
-  inline std::string TrimWhiteSpaces(const std::string &s) {
+  inline std::string trim_spaces(const std::string &s) {
     constexpr char whitespace[] = " \t\n\r";
     const size_t first = s.find_first_not_of(whitespace);
 
@@ -147,8 +147,8 @@ namespace cppsl::console::menu {
    * @return returns either value of converted number or no value if text number cannot be converted
    */
   template<typename T = int>
-  std::optional<T> StringToNumber(const std::string &st) {
-    const auto s = TrimWhiteSpaces(st);
+  std::optional<T> to_number(const std::string &st) {
+    const auto s = trim_spaces(st);
     bool ok = s.empty() ? false : (std::isdigit(s.front())
        || (((std::is_signed<T>::value && (s.front() == '-')) || (s.front() == '+')) && ((s.size() > 1) && std::isdigit(s[1]))));
 
@@ -170,7 +170,7 @@ namespace cppsl::console::menu {
    * @param def - optional default text if no text entered
    * @return either valid input line or no value if problem obtaining input
    */
-  std::optional<std::string> GetLineFromStream(std::istream &is, const std::string &def = "") {
+  std::optional<std::string> get_line(std::istream &is, const std::string &def = "") {
     for (auto no = is.rdbuf()->in_avail(); no && is && std::isspace(is.peek()); is.ignore(), --no);
 
     std::string ln;
@@ -184,7 +184,7 @@ namespace cppsl::console::menu {
    * @param def - optional default text if no text entered
    * @return entered text as typestd::string. No error conditions. Only returns when valid data entered
    */
-  auto GetLineFromStream(const std::string &prm = "", const std::string &def = "") {
+  auto get_line(const std::string &prm = "", const std::string &def = "") {
     std::optional<std::string> o;
 
     do {
@@ -193,7 +193,7 @@ namespace cppsl::console::menu {
         std::cout << " [" << def << "]";
 
       std::cout << " :";
-      o = GetLineFromStream(std::cin, def);
+      o = get_line(std::cin, def);
     } while (!o.has_value() && (std::cout << "Invalid input" << std::endl));
 
     return *o;
@@ -206,7 +206,7 @@ namespace cppsl::console::menu {
    * @return either the correctly extracted data or no value, if there are problems with data extraction
    */
   template<typename T = std::string>
-  std::optional<T> GetNextItem(std::istream &is) {
+  std::optional<T> get_next(std::istream &is) {
     auto i = T{};
     const bool b = (is >> i) && std::isspace(is.peek());
 
@@ -222,13 +222,13 @@ namespace cppsl::console::menu {
    * @return either a valid number of the required type or no value if there are problems during data extraction
    */
   template<typename T = int>
-  auto GetNumberFromStrem(std::istream &is, bool oneline = true) {
+  auto get_number(std::istream &is, bool oneline = true) {
     if (oneline) {
-      const auto o = GetLineFromStream(is);
-      return o.has_value() ? StringToNumber<T>(*o) : std::optional<T>{};
+      const auto o = get_line(is);
+      return o.has_value() ? to_number<T>(*o) : std::optional<T>{};
     }
 
-    return GetNextItem<T>(is);
+    return get_next<T>(is);
   }
 
   /**
@@ -243,7 +243,7 @@ namespace cppsl::console::menu {
    * @return
    */
   template<typename T = int>
-  auto GetNumberFromStrem(const std::string &prm = "",
+  auto get_number(const std::string &prm = "",
                               T nmin = std::numeric_limits<T>::lowest(),
                               T nmax = std::numeric_limits<T>::max(),
                               bool oneline = true) {
@@ -271,7 +271,7 @@ namespace cppsl::console::menu {
 
       std::cout << " :";
 
-      o = GetNumberFromStrem<T>(std::cin, oneline);
+      o = get_number<T>(std::cin, oneline);
     } while ((!o.has_value() || (((*o < nmin) || (*o > nmax)))) && (std::cout << "Invalid input" << std::endl));
 
     return *o;
@@ -284,15 +284,15 @@ namespace cppsl::console::menu {
    * @param  oneline - true if only one char per line (default), false if can have multiple chars per line
    * @return either valid character or no value if problem extracting data
    */
-  std::optional<char> GetCharFromStream(std::istream &is, char def = 0, bool oneline = true) {
+  std::optional<char> get_char(std::istream &is, char def = 0, bool oneline = true) {
     if (oneline) {
-      if (auto o = GetLineFromStream(is); o.has_value())
+      if (auto o = get_line(is); o.has_value())
         return (o->empty() && def ? def : ((o->size() == 1) ? o->front() : std::optional<char>{}));
       else
         return {};
     }
 
-    return GetNextItem<char>(is);
+    return get_next<char>(is);
   }
 
   /**
@@ -303,7 +303,7 @@ namespace cppsl::console::menu {
    * @param  oneline - true if only one char per line (default), false if can have multiple chars per line
    * @return returns valid char. No error conditions. Only returns when valid char entered
    */
-  auto GetCharFromConsole(const std::string &prm = "", const std::string &valid = "", char def = 0, bool oneline = true) {
+  auto get_console_char(const std::string &prm = "", const std::string &valid = "", char def = 0, bool oneline = true) {
     const auto showopt = [&valid, def]() {
       std::cout << " (";
 
@@ -325,7 +325,7 @@ namespace cppsl::console::menu {
         showopt();
 
       std::cout << " :";
-      o = GetCharFromStream(std::cin, def, oneline);
+      o = get_char(std::cin, def, oneline);
     } while ((!o.has_value() || ((!valid.empty()) && (valid.find(*o) == std::string::npos))) &&
        (std::cout << "\nInvalid input!" << std::endl));
 
@@ -339,59 +339,68 @@ namespace cppsl::console::menu {
    *
    * As two different types of entry are to be stored in a vector of variant.
    * The type of pointer to menu_item is certainly known.
-   * The functions called have one parameter - but which may be defined by the show_menu.
+   * The functions called have one parameter - but which may be defined by the inside_show_menu.
    * So std::any type is used for the function parameter. The type of entry for the function is known:
    *
    * void any_your_menu_function(std::any& your_param);
    *
    * The function type is void(*)(std::any& param);
    *
-   * The two types are mandatory in the vector show_menu, therefore f_type and enu*. See struct menu_item.
+   * The two types are mandatory in the vector inside_show_menu, therefore f_type and enu*. See struct menu_item.
    *
    */
-  class ConsoleMenu {
+  class MenuDriver {
    private:
     using func_type = void (*)(std::any &param);
 
     struct menu_item {
       std::string name;
-      std::variant<func_type, ConsoleMenu *> func;
+      std::variant<func_type, MenuDriver *> func;
     };
 
    public:
-    ConsoleMenu() {}
+    MenuDriver() {}
 
-    ConsoleMenu(const std::string &t, const std::vector<menu_item> &vm) : m_title(t), m_items(vm) {}
+    /// constructor
+    /// \param t 
+    /// \param vm 
+    MenuDriver(const std::string &t, const std::vector<menu_item> &vm) : m_title(t), m_menuItems(vm) {}
 
+    /// get title
     auto title() const noexcept {
       return m_title;
     }
 
+    /// set title 
     void title(const std::string &t) {
       m_title = t;
     }
 
-    void menu(std::any &param) {
-      show_menu(*this, param);
+    /// run menu view
+    void run(std::any &param) {
+      inside_show_menu(*this, param);
     }
 
+    /// erase from menu
     bool erase(size_t indx) {
-      if (indx < m_items.size()) {
-        m_items.erase(m_items.begin() + indx);
+      if (indx < m_menuItems.size()) {
+        m_menuItems.erase(m_menuItems.begin() + indx);
         return true;
       }
 
       return false;
     }
 
+    /// append to menu
     bool append(const menu_item &mi) {
-      m_items.emplace_back(mi);
+      m_menuItems.emplace_back(mi);
       return true;
     }
 
+    /// insert to menu
     bool insert(size_t indx, const menu_item &mi) {
-      if (indx < m_items.size()) {
-        m_items.insert(m_items.begin() + indx, mi);
+      if (indx < m_menuItems.size()) {
+        m_menuItems.insert(m_menuItems.begin() + indx, mi);
         return true;
       }
 
@@ -399,35 +408,35 @@ namespace cppsl::console::menu {
     }
 
    private:
-    /**
-     * recursive show menu for items
-     * @param m - console menu
-     * @param param - parameter in console menu
-     */
-    void show_menu(const ConsoleMenu &m, std::any &param) {
-      const auto show = [nom = m.m_items.size()](const ConsoleMenu &mu) {
+
+    /// recursive show menu for items
+    /// @param m - console menu
+    /// @param param - parameter in console menu
+    void inside_show_menu(const MenuDriver &m, std::any &param) {
+      const auto show = [nom = m.m_menuItems.size()](const MenuDriver &mu) {
         std::ostringstream oss;
 
         oss << mu.title() << std::endl;
 
         for (size_t i = 0U; i < nom; ++i) {
-          oss << i + 1 << ")  " << mu.m_items[i].name << std::endl;
+          oss << i + 1 << ")  " << mu.m_menuItems[i].name << std::endl;
         }
 
-        oss << "0)  Exit menu\n\n"
-               "Enter menu option number";
-        return GetNumberFromStrem<size_t>(oss.str(), 0, nom);
+        oss << "0)  Close & Exit from menu\n\n"
+               "Enter the menu item number: ";
+        // get number from incoming stream
+        return get_number<size_t>(oss.str(), 0, nom);
       };
 
       for (size_t opt = 0U; (opt = show(m)) > 0;)
-        if (const auto &mi = m.m_items[opt - 1]; std::holds_alternative<ConsoleMenu::func_type>(mi.func))
-          std::get<ConsoleMenu::func_type>(mi.func)(param);
+        if (const auto &mi = m.m_menuItems[opt - 1]; std::holds_alternative<MenuDriver::func_type>(mi.func))
+          std::get<MenuDriver::func_type>(mi.func)(param);
         else
-          show_menu(*std::get<ConsoleMenu *>(mi.func), param);
+          inside_show_menu(*std::get<MenuDriver *>(mi.func), param);
     }
 
     std::string m_title;
-    std::vector<menu_item> m_items;
+    std::vector<menu_item> m_menuItems;
   };
 
 }// namespace cppsl::console::menu

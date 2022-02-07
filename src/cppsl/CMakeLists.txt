@@ -41,8 +41,7 @@ set(${LIBRARY_TARGET_NAME}_SRC
 set(${LIBRARY_TARGET_NAME}_HDR
         "../../include/cppsl/enum_bitmask.h"
         "../../include/cppsl/opt_results.h"
-        "../../include/cppsl/console/menu.h"
-        "../../include/cppsl/console/menu.h"
+        "../../include/cppsl/console/menu_driver.h"
         "../../include/cppsl/container/deque_threadsafe.h"
         "../../include/cppsl/container/list_threadsafe.h"
         "../../include/cppsl/container/queue_lockfree.h"
