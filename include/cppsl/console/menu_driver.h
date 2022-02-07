@@ -7,24 +7,24 @@
 //
 
 /*************************************************************************/ /**
- * \file    menu.hpp
- * \brief   contains console menu in C++17 style.
+ * \file    menu_driver.h
+ * \brief   contains console menu driver in C++17 style.
  * \author  Alexander Sacharov
- * \date    2022-12-27
+ * \date    2022-02-07
  * \ingroup C++ support library
  *****************************************************************************/
 
-#ifndef __INCLUDE_CPPSL_CONSOLE_MENU_H__
-#define __INCLUDE_CPPSL_CONSOLE_MENU_H__
+#ifndef __INCLUDE_CPPSL_CONSOLE_MENU_DRIVER_H__
+#define __INCLUDE_CPPSL_CONSOLE_MENU_DRIVER_H__
 
 /**
  * \section ex1 Example of use console menu
  *
  *  --------------------------------
- *  #include "cppsl/console/menu.hh"
+ *  #include "cppsl/console/menu_driver.h"
  *
  *  // define namespaces here
- *  using namespace cppsl::console;
+ *  using namespace cppsl::console::menu;
  *  using varVal = std::variant<size_t, int, double, char, std::string>;
  *  --------------------------------
  *  Now define all menu items functions
@@ -298,7 +298,7 @@ namespace cppsl::console::menu {
   /**
    * Obtains a char from the console. First displays prompt text
    * @param  prm - optional prompt text to display first
-   * @param  valid - optionalstd::string containing valid values for the char. Displayed within (...)
+   * @param  valid - optional std::string containing valid values for the char. Displayed within (...)
    * @param  def - optional default char to use if none entered. Displayed within [...]
    * @param  oneline - true if only one char per line (default), false if can have multiple chars per line
    * @return returns valid char. No error conditions. Only returns when valid char entered
@@ -441,4 +441,4 @@ namespace cppsl::console::menu {
 
 }// namespace cppsl::console::menu
 
-#endif /* __INCLUDE_CPPSL_CONSOLE_MENU_H__ */
+#endif /* __INCLUDE_CPPSL_CONSOLE_MENU_DRIVER_H__ */
