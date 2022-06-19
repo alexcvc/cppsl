@@ -10,6 +10,7 @@ cmake_minimum_required(VERSION 3.5)
 
 # Set the PROJECT_NAME, PROJECT_VERSION as well as other variable
 project(cppsl
+        DESCRIPTION "C++ support library"
         LANGUAGES CXX C
         VERSION 1.0.0.0)
 
@@ -32,10 +33,6 @@ if (MSVC)
 endif ()
 
 # Build Position Independent Code (PIC).
-# Linking a static library that is not built with PIC from a shared
-# library will fail on some compiler/architecture combinations.
-# Further details on PIC can be found here:
-# https://eli.thegreenplace.net/2011/11/03/position-independent-code-pic-in-shared-libraries/
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Disable C and C++ compiler extensions.
@@ -49,7 +46,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 ### Options
 option(BUILD_SHARED_LIBS "Build libraries as shared as opposed to static" OFF)
 option(BUILD_TESTING "Create tests using CMake" OFF)
-option(BUILD_EXAMPLES "Build examples using CMake" ON)
+option(BUILD_EXAMPLES "Build examples using CMake" OFF)
 
 # Build test related commands?
 if (BUILD_TESTING)
@@ -74,11 +71,6 @@ endif ()
 set(cppsl_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 
 ### Compile external.
-set(doctest_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/doctest)
-set(GSL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/gsl/include)
-set(gsl_lite_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/gsl-lite/include)
-set(nlohman_json_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/nlohman_json/include)
-set(pugixml_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/pugixml/src)
 set(fmt_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/fmt/fmt)
 set(spdlog_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/spdlog/include)
 
@@ -89,13 +81,6 @@ add_subdirectory(src)
 
 # Create and install CMake configuration files for your project that are
 # necessary to for other projects to call find_package(cppsl).
-# install_basic_package_files() comes with many input parameters to customize
-# the configuration files. The parameters used in the following call provide
-# basic versions of CMake configuration files.
-# See install_basic_package_files() documentation found in ./cmake folder.
-#
-# Note that if your library depends from other libraries, you are probably
-# required to used the install_basic_package_files() DEPENDENCIES option.
 include(InstallBasicPackageFiles)
 install_basic_package_files(${PROJECT_NAME}
         VERSION ${${PROJECT_NAME}_VERSION}

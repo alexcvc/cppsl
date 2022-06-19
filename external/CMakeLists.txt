@@ -6,11 +6,5 @@
 # Notes:
 ##
 
-add_subdirectory( doctest )
 add_subdirectory( fmt )
-add_subdirectory( gsl )
-add_subdirectory( gsl-lite )
-add_subdirectory( nlohman_json )
-add_subdirectory( pugixml )
 add_subdirectory( spdlog )
-add_subdirectory( cxxopts )

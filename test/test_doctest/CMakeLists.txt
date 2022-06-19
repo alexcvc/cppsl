@@ -1,5 +1,17 @@
 set(TEST_TARGET_NAME test_doctest)
 
+
+if(NOT ${CMAKE_CURRENT_BINARY_DIR}/doctest.h )
+set(url https://raw.githubusercontent.com/onqtam/doctest/v2.4.8/doctest/doctest.h)
+file(
+  DOWNLOAD ${url} "${CMAKE_CURRENT_BINARY_DIR}/doctest.h"
+  STATUS status)
+list(GET status 0 error)
+if(error)
+  message(FATAL_ERROR "Could not download ${url}")
+endif()
+endif()
+
 set(${TEST_TARGET_NAME}_SRC main.cpp)
 
 find_package(Threads REQUIRED)
