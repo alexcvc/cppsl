@@ -7,7 +7,7 @@ The library will include classes which may be implemented in C++20, 23 and are n
 
 ## C++ Version
 
-Currently, all codes use C++17, with the exception of designated initializers. 
+Currently, all codes use C++20 
 
 
 
