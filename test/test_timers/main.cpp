@@ -1,4 +1,6 @@
 #include <thread>
+#include <fmt/format.h>
+#include <fmt/chrono.h>
 #include "cppsl/time/functions.hpp"
 #include "cppsl/time/watch.hpp"
 #include "cppsl/time/stopTimer.hpp"
@@ -109,8 +111,6 @@ TEST(TestTimers, TimerWatch) {
 
 TEST(TestTimers, RoundWatch) {
   using namespace std::chrono_literals;
-  using DD = std::chrono::duration<std::size_t, std::ratio<2, 3>>;
-  using TP = std::chrono::time_point<std::chrono::system_clock, DD>;
 
   cppsl::time::RoundWatch timer;
 
@@ -128,8 +128,8 @@ TEST(TestTimers, RoundWatch) {
   timer.Stop();
 
   for (auto& iter : timer.Laps()) {
-    std::string st1 = cppsl::time::toString<std::chrono::system_clock::time_point>(iter.total_time);
-    std::string st2 = cppsl::time::toString<std::chrono::system_clock::time_point>(iter.split_time);
+    std::string st1 = fmt::format("{:%Y/%m/%d %H:%M:%S}", iter.total_time);
+    std::string st2 = fmt::format("{:%Y/%m/%d %H:%M:%S}", iter.split_time);
     std::clog << st1 << " with split time: " << st2 << std::endl;
   }
 }
