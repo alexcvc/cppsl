@@ -109,6 +109,8 @@ TEST(TestTimers, TimerWatch) {
 
 TEST(TestTimers, RoundWatch) {
   using namespace std::chrono_literals;
+  using DD = std::chrono::duration<std::size_t, std::ratio<2, 3>>;
+  using TP = std::chrono::time_point<std::chrono::system_clock, DD>;
 
   cppsl::time::RoundWatch timer;
 
