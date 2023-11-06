@@ -126,7 +126,9 @@ TEST(TestTimers, RoundWatch) {
   timer.Stop();
 
   for (auto& iter : timer.Laps()) {
-    std::clog << "" << iter.total_time << " with split time: " << iter.split_time << std::endl;
+    std::string st1 = cppsl::time::toString<std::chrono::system_clock::time_point>(iter.total_time);
+    std::string st2 = cppsl::time::toString<std::chrono::system_clock::time_point>(iter.split_time);
+    std::clog << st1 << " with split time: " << st2 << std::endl;
   }
 }
 
