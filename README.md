@@ -1,3 +1,5 @@
+[![CMake on multiple platforms](https://github.com/alexcvc/cppsl/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/alexcvc/cppsl/actions/workflows/cmake-multi-platform.yml)
+
 Another C++ support library.
 ============================
 
