@@ -128,8 +128,8 @@ TEST(TestTimers, RoundWatch) {
   timer.Stop();
 
   for (auto& iter : timer.Laps()) {
-    std::string st1 = fmt::format("{:%Y/%m/%d %H:%M:%S}", iter.total_time);
-    std::string st2 = fmt::format("{:%Y/%m/%d %H:%M:%S}", iter.split_time);
+    auto st1 = fmt::format("{}", static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(iter.total_time).count()));
+    auto st2 = fmt::format("{}", static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(iter.split_time).count()));
     std::clog << st1 << " with split time: " << st2 << std::endl;
   }
 }
