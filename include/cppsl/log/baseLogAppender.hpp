@@ -45,13 +45,13 @@ namespace cppsl::log {
    /// Class implements Something which has a log appender
    /// @author Alexander Sacharov
    //
-   class BaseWithLogAppender {
+   class BaseLogAppender {
     public:
       /// constructor
-      explicit BaseWithLogAppender(cppsl::log::log_appenderPtr logPtr) : m_logPtr(logPtr) {}
+      explicit BaseLogAppender(cppsl::log::log_appenderPtr logPtr) : m_logPtr(logPtr) {}
 
       /// destructor
-      virtual ~BaseWithLogAppender() = default;
+      virtual ~BaseLogAppender() = default;
 
     protected:
       //-------------------------------------

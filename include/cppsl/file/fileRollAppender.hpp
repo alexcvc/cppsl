@@ -22,7 +22,7 @@
 //-----------------------------------------------------------------------------
 #include <stdarg.h>
 #include <cppsl/file/fileBaseAppender.hpp>
-#include <cppsl/log/baseWithLogAppender.hpp>
+#include <cppsl/log/baseLogAppender.hpp>
 
 //----------------------------------------------------------------------------
 // Public defines and macros

@@ -45,7 +45,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-#include <cppsl/log/baseWithLogAppender.hpp>
+#include <cppsl/log/baseLogAppender.hpp>
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -65,7 +65,7 @@
 namespace cppsl::file {
 
   /// @brief File Appender
-  class FileBaseAppender : public cppsl::log::BaseWithLogAppender {
+  class FileBaseAppender : public cppsl::log::BaseLogAppender {
    public:
     /** The  `FileBaseAppender`  constructor takes the following parameters:
      * @param `logPtr` : A shared pointer to a log appender.

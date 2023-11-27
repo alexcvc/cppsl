@@ -23,7 +23,7 @@ set(${TargetName}_HDR
    "../include/cppsl/file/fileRollAppender.hpp"
    "../include/cppsl/log/details/fallback_sink.hpp"
    "../include/cppsl/log/details/rsyslog_sink.hpp"
-   "../include/cppsl/log/baseWithLogAppender.hpp"
+   "../include/cppsl/log/baseLogAppender.hpp"
    "../include/cppsl/log/logAppender.hpp"
    "../include/cppsl/math/constants.hpp"
    "../include/cppsl/math/functions.hpp"

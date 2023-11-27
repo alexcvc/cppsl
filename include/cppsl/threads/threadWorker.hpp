@@ -24,7 +24,7 @@
 #include <string.h>
 #include <chrono>
 #include <condition_variable>
-#include <cppsl/log/baseWithLogAppender.hpp>
+#include <cppsl/log/baseLogAppender.hpp>
 #include <mutex>
 #include <string>
 #include <thread>
@@ -47,7 +47,7 @@ namespace cppsl::concurency {
    /// Class implements Class base thread is parent for all worker threads
    /// @author Alexander Sacharov
    //
-   class ThreadWorker : public cppsl::log::BaseWithLogAppender {
+   class ThreadWorker : public cppsl::log::BaseLogAppender {
     public:
       /// states
       enum class thread_state {
@@ -74,7 +74,7 @@ namespace cppsl::concurency {
       /// The following is the default constructor if no arguments are supplied.
       /// 1000 ms is default
       ThreadWorker(cppsl::log::log_appenderPtr logPtr, std::string_view name, const std::chrono::microseconds& timeout)
-          : cppsl::log::BaseWithLogAppender(logPtr), m_name(name), m_state(thread_state::IDLE), m_timeout(timeout) {}
+          : cppsl::log::BaseLogAppender(logPtr), m_name(name), m_state(thread_state::IDLE), m_timeout(timeout) {}
 
       /// virtual destructor
       virtual ~ThreadWorker() {}

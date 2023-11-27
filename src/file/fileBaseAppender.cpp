@@ -43,7 +43,7 @@ using namespace cppsl::file;
 
 FileBaseAppender::FileBaseAppender(cppsl::log::log_appenderPtr logPtr, const std::filesystem::path &filePath,
                                    bool append, std::ios_base::openmode mode)
-   : cppsl::log::BaseWithLogAppender(logPtr), m_filePath(filePath), m_mode(mode) {
+   : cppsl::log::BaseLogAppender(logPtr), m_filePath(filePath), m_mode(mode) {
   if (!append) {
     mode |= std::ios::trunc;
   } else {
