@@ -95,7 +95,7 @@ namespace cppsl::time {
   inline std::string toString(const TimePoint &timePoint) {
     auto seconds = Double(timePoint.time_since_epoch().count()) * TimePoint::period::num / TimePoint::period::den;
     auto const zeconds = std::modf(seconds, &seconds);
-    std::time_t tt{seconds};
+    std::time_t tt{static_cast<std::time_t>(seconds)};
     std::ostringstream oss;
     auto const tm = std::localtime(&tt);
     if (!tm)

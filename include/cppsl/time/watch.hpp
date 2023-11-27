@@ -130,7 +130,7 @@ class TimerWatch : public StopWatch<duration> {
 
    using clock = typename StopWatch<duration>::clock;
    using time_point = typename StopWatch<duration>::clock;
-   using StopWatch<duration>::State;
+//   using StopWatch<duration>::State;
 
  public:
    TimerWatch() = default;
@@ -174,7 +174,6 @@ class RoundWatch : public StopWatch<duration> {
 
    using clock = typename StopWatch<duration>::clock;
    using time_point = typename StopWatch<duration>::clock;
-   using StopWatch<duration>::State;
 
  public:
    RoundWatch() = default;
