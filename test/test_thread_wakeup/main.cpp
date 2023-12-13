@@ -18,7 +18,6 @@
 #include <stop_token>
 #include <string>
 #include <thread>
-#include <stop_token>
 
 using namespace std::chrono_literals;
 
@@ -29,8 +28,6 @@ using namespace std::chrono_literals;
 //-----------------------------------------------------------------------------
 // local Typedefs, Enums, Unions
 //-----------------------------------------------------------------------------
-
-const int numberTasks = 3;
 
 /**
  * @brief event plan structure
@@ -44,10 +41,6 @@ struct Event {
 //-----------------------------------------------------------------------------
 // local/global Variables Definitions
 //-----------------------------------------------------------------------------
-/**
- * @brief Events for three asynchronous tasks
- */
-std::array<Event, numberTasks> task_events;
 
 //-----------------------------------------------------------------------------
 // local/global Function Prototypes
@@ -67,42 +60,63 @@ std::array<Event, numberTasks> task_events;
 */
 int main(int argc, char** argv) {
   // configuration
-  std::stop_source stop_src;  // Create a stop source
-  std::array<std::thread, numberTasks> task_workers;
+  std::stop_source stop_src;   // Create a stop source
 
-  //----------------------------------------------------------
-  // go to idle in main
-  //----------------------------------------------------------
-  // Create all workers and pass stop tokens
-  for (uint i = 0; i < task_workers.size(); ++i) {
-    std::cout << "Start Task=" << i << std::endl;
+  // Create sleeper thread
+  std::thread tSleep = std::move(std::thread(
+     [](std::stop_token token) {
+       std::mutex sem;
+       std::condition_variable event;
 
-    task_workers[i] = std::move(std::thread(
-        [](int number, std::stop_token token) {
-          std::cout << "Task " << std::to_string(number) << std::endl;
+       std::cout << "Sleeper thread" << std::endl;
 
-          // Register a stop callback
-          std::stop_callback stop_cb(token, [&]() {
-            // Wake thread on stop request
-            task_events[number].event_condition.notify_all();
-          });
+       // Register a stop callback
+       std::stop_callback stop_cb(token, [&]() {
+         // Wake thread on stop request
+         event.notify_all();
+       });
 
-          while (true) {
-            {
-              // Start of locked block
-              std::unique_lock lck(task_events[number].event_mutex);
-              task_events[number].event_condition.wait_for(lck, 2s);
-            }
-            // Stop if requested to stop
-            if (token.stop_requested()) {
-              break;
-            }
-          }  // End of while loop
-        },
-        i, stop_src.get_token()));
+       while (true) {
+         {
+           // Start of locked block
+           std::unique_lock lck(sem);
+           event.wait_for(lck, 10s);
+         }
+         // Stop if requested to stop
+         if (token.stop_requested()) {
+           break;
+         }
+       }   // End of while loop
+     },
+     stop_src.get_token()));
 
-    std::this_thread::sleep_for(10ms);
-  }
+  // Create sleeper thread
+  std::thread tWaker = std::move(std::thread(
+     [](std::stop_token token) {
+       std::mutex sem;
+       std::condition_variable event;
+
+       std::cout << "Task " << std::to_string(number) << std::endl;
+
+       // Register a stop callback
+       std::stop_callback stop_cb(token, [&]() {
+         // Wake thread on stop request
+         event.notify_all();
+       });
+
+       while (true) {
+         {
+           // Start of locked block
+           std::unique_lock lck(sem);
+           event.wait_for(lck, 10s);
+         }
+         // Stop if requested to stop
+         if (token.stop_requested()) {
+           break;
+         }
+       }   // End of while loop
+     },
+     stop_src.get_token()));
 
   //----------------------------------------------------------
   // Start application stuff
