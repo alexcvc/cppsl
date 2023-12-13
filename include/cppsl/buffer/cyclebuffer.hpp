@@ -70,14 +70,18 @@
 
 namespace cppsl::buffer {
 /**
- * \brief Lock free, with no wasted slots ringbuffer implementation
+ * \class CycleBuffer
+ * \brief A cyclic buffer implementation for storing elements of type T
  *
- * \tparam T Type of buffered elements
- * \tparam buffer_size Size of the buffer. Must be a power of 2.
- * \tparam fake_tso Omit generation of explicit barrier code to avoid unnecesary instructions in tso scenario
- * (e.g. simple microcontrollers/single core)
- * \tparam cacheline_size Size of the cache line, to insert appropriate padding in between indexes and buffer
- * \tparam index_t Type of array indexing type. Serves also as placeholder for future implementations.
+ * The CycleBuffer class provides a thread-safe cyclic buffer for storing elements of type T. The buffer has a fixed size
+ * specified by the buffer_size template parameter. The buffer uses atomic operations to ensure thread safety and provides
+ * methods for inserting and removing elements from the buffer.
+ *
+ * \tparam T The type of the elements stored in the buffer
+ * \tparam buffer_size The size of the buffer (default: 16)
+ * \tparam fake_tso A flag indicating whether to use a fake total store order (default: false)
+ * \tparam cacheline_size The size of the cache line (default: 0)
+ * \tparam index_t The type used for indexing the buffer (default: size_t)
  */
 template <typename T, size_t buffer_size = 16, bool fake_tso = false, size_t cacheline_size = 0,
           typename index_t = size_t>
@@ -90,8 +94,8 @@ class CycleBuffer {
 
   /**
    * \brief Special case constructor to premature out unnecessary initialization code when object is
-   * instatiated in .bss section
-   * \warning If object is instantiated on stack, heap or inside noinit section then the contents have to be
+   * instantiated in .bss section
+   * \warning If object is instantiated on stack, heap or inside section then the contents have to be
    * explicitly cleared before use
    * \param dummy Ignored
    */
@@ -406,8 +410,8 @@ size_t CycleBuffer<T, buffer_size, fake_tso, cacheline_size, index_t>::writeBuff
 
 template <typename T, size_t buffer_size, bool fake_tso, size_t cacheline_size, typename index_t>
 size_t CycleBuffer<T, buffer_size, fake_tso, cacheline_size, index_t>::writeBuff(const T* buff, size_t count,
-                                                                                size_t count_to_callback,
-                                                                                void (*execute_data_callback)()) {
+                                                                                 size_t count_to_callback,
+                                                                                 void (*execute_data_callback)()) {
   size_t written = 0;
   index_t available = 0;
   index_t tmp_head = head.load(std::memory_order_relaxed);
@@ -463,8 +467,8 @@ size_t CycleBuffer<T, buffer_size, fake_tso, cacheline_size, index_t>::readBuff(
 
 template <typename T, size_t buffer_size, bool fake_tso, size_t cacheline_size, typename index_t>
 size_t CycleBuffer<T, buffer_size, fake_tso, cacheline_size, index_t>::readBuff(T* buff, size_t count,
-                                                                               size_t count_to_callback,
-                                                                               void (*execute_data_callback)()) {
+                                                                                size_t count_to_callback,
+                                                                                void (*execute_data_callback)()) {
   size_t read = 0;
   index_t available = 0;
   index_t tmp_tail = tail.load(std::memory_order_relaxed);
