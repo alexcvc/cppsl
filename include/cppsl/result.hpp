@@ -30,11 +30,6 @@
 
 namespace cppsl {
 
-/**
- * @file ResultOptVal.h
- *
- * @brief This file contains the declaration of the ResultOptVal class template.
- */
 // ////////////////////////////////////////////////////////////////////////////
   /// result using std::optional
   /// It is incorrect to inherit from a standard library class.
