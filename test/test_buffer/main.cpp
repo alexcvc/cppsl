@@ -1,4 +1,4 @@
-#include <cppsl/buffer/cyclebuffer.hpp>
+#include <cppsl/buffer/cycle_buffer.hpp>
 #include <cppsl/buffer/ring_buffer.hpp>
 #include <cstring>
 #include <thread>
@@ -184,7 +184,7 @@ TEST(TestBuffer, TestCycleBuffer) {   // 12/2/2020 -> 737761
     std::array<uint8_t,  100> data;
   };
 
-  cppsl::buffer::CycleBuffer<Message> buffer;
+  cppsl::buffer::Cycle_Buffer<Message> buffer;
 
   /*
    * PROVIDER

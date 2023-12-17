@@ -1,2 +1,3 @@
-add_subdirectory(byteswap)
-add_subdirectory(buffer)
+add_subdirectory(byteSwap)
+add_subdirectory(cyclicBuffer)
+add_subdirectory(ringBuffer)

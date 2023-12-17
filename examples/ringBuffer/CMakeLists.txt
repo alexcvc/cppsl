@@ -1,8 +1,8 @@
-set(TargetName byteswap)
+set(TargetName ringBuffer)
 
 set(${TargetName}_SRC
-        main.cpp
-        )
+   main.cpp
+)
 
 add_executable(${TargetName} ${${TargetName}_SRC})
 

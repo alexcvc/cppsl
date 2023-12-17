@@ -1,12 +1,3 @@
-/* SPDX-License-Identifier: MIT */
-//
-// Copyright (c) 2017 Jan Oleksiewicz <jnk0le@hotmail.com>
-//               All rights reserved.
-//
-// This work is licensed under the terms of the MIT license.
-// For a copy, see <https://opensource.org/licenses/MIT>.
-//
-
 /*************************************************************************/ /**
  * @file    
  * @brief   contains Simple SPSC cycle buffer implementation .
@@ -23,8 +14,8 @@
  * - no exceptions, RTTI, virtual functions and dynamic memory allocation
  * - designed for compile time (static) allocation and type evaluation
  * - no wasted slots (in powers of 2 granularity)
- * - lock and wait free SPSC operation
- * - underrun and overrun checks in insert/remove functions
+ * - lock and wait operation
+ * - under-run and overrun checks in insert/remove functions
  * - highly efficient on most microcontroller architectures (nearly equal performance as in 'wasted-slot' implemetation)
  * 
  * ## notes
@@ -69,6 +60,7 @@
 #include <limits>
 
 namespace cppsl::buffer {
+
 /**
  * \class CycleBuffer
  * \brief A cyclic buffer implementation for storing elements of type T
@@ -79,18 +71,18 @@ namespace cppsl::buffer {
  *
  * \tparam T The type of the elements stored in the buffer
  * \tparam buffer_size The size of the buffer (default: 16)
- * \tparam fake_tso A flag indicating whether to use a fake total store order (default: false)
- * \tparam cacheline_size The size of the cache line (default: 0)
+ * \tparam use_relaxed_mem_order A flag indicating whether to use a fake total store order (default: false)
+ * \tparam align_size The size of the cache line (default: 0)
  * \tparam index_t The type used for indexing the buffer (default: size_t)
  */
-template <typename T, size_t buffer_size = 16, bool fake_tso = false, size_t cacheline_size = 0,
+template <typename T, size_t buffer_size = 16, bool use_relaxed_mem_order = false, size_t align_size = 0,
           typename index_t = size_t>
-class CycleBuffer {
+class Cycle_Buffer {
  public:
   /**
    * \brief Default constructor, will initialize head and tail indexes
    */
-  CycleBuffer() : head(0), tail(0) {}
+  Cycle_Buffer() : head(0), tail(0) {}
 
   /**
    * \brief Special case constructor to premature out unnecessary initialization code when object is
@@ -99,7 +91,7 @@ class CycleBuffer {
    * explicitly cleared before use
    * \param dummy Ignored
    */
-  CycleBuffer(int dummy) { (void)(dummy); }
+  Cycle_Buffer(int dummy) { (void)(dummy); }
 
   /**
    * \brief Clear buffer from producer side
@@ -362,18 +354,19 @@ class CycleBuffer {
  private:
   constexpr static index_t buffer_mask = buffer_size - 1;   //!< bitwise mask for a given buffer size
   constexpr static std::memory_order index_acquire_barrier =
-     fake_tso
+     use_relaxed_mem_order
         ? std::memory_order_relaxed
         : std::memory_order_acquire;   // do not load from, or store to buffer before confirmed by the opposite side
   constexpr static std::memory_order index_release_barrier =
-     fake_tso ? std::memory_order_relaxed
+     use_relaxed_mem_order
+        ? std::memory_order_relaxed
               : std::memory_order_release;   // do not update own side before all operations on data_buff committed
 
-  alignas(cacheline_size) std::atomic<index_t> head;   //!< head index
-  alignas(cacheline_size) std::atomic<index_t> tail;   //!< tail index
+  alignas(align_size) std::atomic<index_t> head;   //!< head index
+  alignas(align_size) std::atomic<index_t> tail;   //!< tail index
 
   // put buffer after variables so everything can be reached with short offsets
-  alignas(cacheline_size) T data_buff[buffer_size];   //!< actual buffer
+  alignas(align_size) T data_buff[buffer_size];   //!< actual buffer
 
   // let's assert that no UB will be compiled in
   static_assert((buffer_size != 0), "buffer cannot be of zero size");
@@ -387,8 +380,24 @@ class CycleBuffer {
                 "buffer size is too large for a given indexing type (maximum size for n-bit type is 2^(n-1))");
 };
 
-template <typename T, size_t buffer_size, bool fake_tso, size_t cacheline_size, typename index_t>
-size_t CycleBuffer<T, buffer_size, fake_tso, cacheline_size, index_t>::writeBuff(const T* buff, size_t count) {
+/**
+ * @brief Write data to the cyclic buffer.
+ *
+ * This function writes the provided data to the cyclic buffer.
+ *
+ * @tparam T The type of data stored in the buffer.
+ * @tparam buffer_size The size of the buffer.
+ * @tparam use_relaxed_mem_order Boolean value indicating whether use_relaxed_mem_order is enabled or not.
+ * @tparam align_size The size of the alignment.
+ * @tparam index_t The type of index used to access the buffer.
+ *
+ * @param buff A pointer to the data to be written.
+ * @param count The number of elements to be written.
+ *
+ * @return The number of elements written to the buffer.
+ */
+template <typename T, size_t buffer_size, bool use_relaxed_mem_order, size_t align_size, typename index_t>
+size_t Cycle_Buffer<T, buffer_size, use_relaxed_mem_order, align_size, index_t>::writeBuff(const T* buff, size_t count) {
   index_t available = 0;
   index_t tmp_head = head.load(std::memory_order_relaxed);
   size_t to_write = count;
@@ -408,8 +417,8 @@ size_t CycleBuffer<T, buffer_size, fake_tso, cacheline_size, index_t>::writeBuff
   return to_write;
 }
 
-template <typename T, size_t buffer_size, bool fake_tso, size_t cacheline_size, typename index_t>
-size_t CycleBuffer<T, buffer_size, fake_tso, cacheline_size, index_t>::writeBuff(const T* buff, size_t count,
+template <typename T, size_t buffer_size, bool use_relaxed_mem_order, size_t align_size, typename index_t>
+size_t Cycle_Buffer<T, buffer_size, use_relaxed_mem_order, align_size, index_t>::writeBuff(const T* buff, size_t count,
                                                                                  size_t count_to_callback,
                                                                                  void (*execute_data_callback)()) {
   size_t written = 0;
@@ -444,8 +453,8 @@ size_t CycleBuffer<T, buffer_size, fake_tso, cacheline_size, index_t>::writeBuff
   return written;
 }
 
-template <typename T, size_t buffer_size, bool fake_tso, size_t cacheline_size, typename index_t>
-size_t CycleBuffer<T, buffer_size, fake_tso, cacheline_size, index_t>::readBuff(T* buff, size_t count) {
+template <typename T, size_t buffer_size, bool use_relaxed_mem_order, size_t align_size, typename index_t>
+size_t Cycle_Buffer<T, buffer_size, use_relaxed_mem_order, align_size, index_t>::readBuff(T* buff, size_t count) {
   index_t available = 0;
   index_t tmp_tail = tail.load(std::memory_order_relaxed);
   size_t to_read = count;
@@ -465,8 +474,8 @@ size_t CycleBuffer<T, buffer_size, fake_tso, cacheline_size, index_t>::readBuff(
   return to_read;
 }
 
-template <typename T, size_t buffer_size, bool fake_tso, size_t cacheline_size, typename index_t>
-size_t CycleBuffer<T, buffer_size, fake_tso, cacheline_size, index_t>::readBuff(T* buff, size_t count,
+template <typename T, size_t buffer_size, bool use_relaxed_mem_order, size_t align_size, typename index_t>
+size_t Cycle_Buffer<T, buffer_size, use_relaxed_mem_order, align_size, index_t>::readBuff(T* buff, size_t count,
                                                                                 size_t count_to_callback,
                                                                                 void (*execute_data_callback)()) {
   size_t read = 0;

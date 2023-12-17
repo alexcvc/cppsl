@@ -1,4 +1,4 @@
-#include <cppsl/buffer/cyclebuffer.hpp>
+#include <cppsl/buffer/cycle_buffer.hpp>
 #include <cppsl/buffer/ring_buffer.hpp>
 #include <cstring>
 #include <thread>

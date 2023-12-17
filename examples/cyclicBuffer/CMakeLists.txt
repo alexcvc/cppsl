@@ -1,4 +1,4 @@
-set(TargetName buffer)
+set(TargetName cyclicBuffer)
 
 set(${TargetName}_SRC
    main.cpp
