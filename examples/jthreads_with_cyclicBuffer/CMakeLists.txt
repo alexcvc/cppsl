@@ -1,4 +1,4 @@
-set(TargetName cyclicBuffer)
+set(TargetName threadsCyclicBuffer)
 
 set(${TargetName}_SRC
    main.cpp

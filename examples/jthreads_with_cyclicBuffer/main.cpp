@@ -104,7 +104,7 @@ int main() {
     std::this_thread::sleep_for(10ms);
   }
 
-  std::osyncstream(std::cout) << "==> ALL THREADS STARTED ======================================" << std::endl;
+  std::osyncstream(std::cout) << "==> ALL THREADS STARTED ======================================\n" << std::endl;
   //----------------------------------------------------------
   // Start application stuff
   //----------------------------------------------------------
@@ -116,7 +116,7 @@ int main() {
     std::this_thread::sleep_for(1s);
   }
 
-  std::osyncstream(std::cout) << "==> START TERMINATION ======================================" << std::endl;
+  std::osyncstream(std::cout) << "==> START TERMINATION ======================================\n" << std::endl;
   // set token to stop all worker
   stop_src.request_stop();
 

@@ -1,3 +1,3 @@
 add_subdirectory(byteSwap)
-add_subdirectory(cyclicBuffer)
+add_subdirectory(jthreads_with_cyclicBuffer)
 add_subdirectory(ringBuffer)
