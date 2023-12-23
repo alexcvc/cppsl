@@ -1,4 +1,5 @@
 #include <cppsl/buffer/cycle_buffer.hpp>
+#include <fmt/format.h>
 #include <cstring>
 #include <memory>
 #include <thread>
@@ -8,14 +9,19 @@ using namespace cppsl::buffer;
 struct TestMessage {
   uint32_t msg_cnt{0};
   std::string msg_text{};
+
+  TestMessage() = default;
+  TestMessage(int cnt, std::string text): msg_cnt(cnt), msg_text(text) {}
 };
+
+constexpr uint32_t numbThreads{10};
 
 /*************************************************************************/ /**
  * main
  * @return
  */
 int main() {
-  int message_count{0};
+  int message_count{100};
   Cycle_Buffer<TestMessage, 32> buffer;
 
   /*
@@ -24,8 +30,8 @@ int main() {
   auto thread_provider = [&]() {
     std::printf("-->> begin send\n");
 
-    for (size_t i = 0; i < message_count;) {
-      TestMessage msg;
+    for (size_t i = 0; i < message_count; ++i) {
+      TestMessage msg(i, fmt::format("Long message with counter {0} & Long message with counter {0}", i));
       if (!buffer.insert(msg)) {
         std::printf("-->> message not sent yet (%zu)...\n", i);
         std::terminate();
@@ -38,43 +44,21 @@ int main() {
    */
   auto thread_consumer = [&]() {
     std::printf("--<< begin receive\n");
-
-    for (size_t i = 0; i < message_count;) {
-      if (!buffer.get(message_buffer.get(), message_size)) {
-        std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
-        double elapsed = std::chrono::duration<double>(now - start).count();
-        if (is_first_warning || std::chrono::duration<double>(now - time_of_warning).count() > 1) {
-          std::printf("--<< message not arrived yet (%zu)...\n", i);
-          time_of_warning = now;
-          is_first_warning = false;
-        }
-        if (elapsed > param::messageTimeout) {
-          std::printf("--<< message receiving timeout\n");
+    for (size_t i = 0; i < message_count; ++i) {
+      if(buffer.readAvailable()) {
+        TestMessage msg;
+        if (!buffer.readBuff(&msg, 1)) {
+          std::printf("-->> cannot read message (%zu)...\n", i);
           std::terminate();
+        } else {
+          std::printf("-->> message %d read %s\n", i, msg.msg_text.c_str());
         }
-      } else {
-        diff_message--;
-        number_recv++;
-
-        size_t msg;
-        std::memcpy(&msg, message_buffer.get(), sizeof(size_t));
-        if (msg != i) {
-          std::printf("--<< message (%zu) != expected (%zu)\n", msg, i);
-          std::terminate();
-        }
-        ++i;
-        start = std::chrono::steady_clock::now();
-        is_first_warning = true;
       }
     }
-
-    std::printf("--<< received (%zu)\n", message_count);
   };
 
-  for (size_t i = 0; i < param::numTries; ++i) {
-    diff_message = 0;
-
-    std::printf("---------------- %4zu/%4zu ----------------\n", i + 1, param::numTries);
+  for (size_t i = 0; i < numbThreads; ++i) {
+    std::printf("---------------- %4zu/%4zu ----------------\n", i + 1, numbThreads);
     std::thread t1(thread_provider);
     std::thread t2(thread_consumer);
     t1.join();
@@ -83,7 +67,7 @@ int main() {
   std::printf("-------------------------------------------\n");
   std::printf("success!\n");
 
-  std::printf("<<< TestCase end: %s >>>\n", m_name.c_str());
+  std::printf("<<< TestCase end >>>\n");
 
   return 0;
 }
