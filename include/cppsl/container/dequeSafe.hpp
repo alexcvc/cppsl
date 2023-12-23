@@ -77,33 +77,44 @@ class DequeSafe {
       /// default constructor
   DequeSafe() {}
 
-      /// copy constructor
-      /// \param rvalue dequeue
+  /**
+   * @class DequeSafe
+   * @brief A thread-safe implementation of deque container.
+   *
+   * The DequeSafe class implements a thread-safe version of the deque container,
+   * which allows multiple threads to concurrently perform operations on the container
+   * without causing any data race. It uses a mutex and condition variable to ensure
+   * synchronized access to the underlying deque.
+   *
+   * @tparam T The type of elements stored in the deque.
+   * @tparam _TAlloc The allocator type for element construction, defaults to std::allocator<T>.
+   */
   DequeSafe(DequeSafe const& other) {
     std::lock_guard<std::mutex> lk(other.m_semaphore);
     m_container = other.m_container;
   }
 
   /**
-     * @brief Clears the container.
-     *
-     * This function acquires a lock on the semaphore and clears the container by removing all elements from it.
-     */
+    * @brief Removes all elements from the container.
+    *
+    * The clear function acquires a lock on the semaphore and removes all elements from the container.
+    * After clearing the container, it is empty.
+    */
   void clear() {
     std::lock_guard<std::mutex> lk(m_semaphore);
     m_container.clear();
   }
 
   /**
-   * @brief Adds a new element to the front of the deque container.
-   *
-   * This function acquires a lock on the semaphore and adds the new value
-   * to the front of the deque container. It then notifies one waiting thread
-   * that the deque is no longer empty.
-   *
-   * @tparam T The type of elements stored in the deque.
-   * @param new_value The value to be added to the deque.
-   */
+    * @brief Adds a new element to the front of the deque container.
+    *
+    * This function acquires a lock on the semaphore and adds the new value
+    * to the front of the deque container. It then notifies one waiting thread
+    * that the deque is no longer empty.
+    *
+    * @tparam T The type of elements stored in the deque.
+    * @param new_value The value to be added to the deque.
+    */
   void push_front(T new_value) {
     std::lock_guard<std::mutex> lk(m_semaphore);
     m_container.push_front(new_value);

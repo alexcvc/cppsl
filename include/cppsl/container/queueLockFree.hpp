@@ -136,13 +136,16 @@ class QueueLockFree {
   }
 
   /**
-     * @brief Pop an element from the front of the lock-free queue.
-     *
-     * This function pops the first node from the head of the lock-free queue (FIFO).
-     * If the queue is empty, it returns an empty shared pointer.
-     *
-     * @return std::shared_ptr<T> A shared pointer to the popped element.
-     */
+    * @brief Try to pop an element from the front of the lock-free queue.
+    *
+    * This function tries to pop an element from the front of the lock-free queue.
+    * If the queue is empty, it returns an empty shared pointer.
+    *
+    * @tparam T The type of the elements stored in the queue.
+    *
+    * @return std::shared_ptr<T> A shared pointer to the popped element if successful,
+    * or an empty shared pointer if the queue is empty.
+    */
   std::shared_ptr<T> try_pop() {
     std::unique_ptr<node> old_head = pop_head();
     return old_head ? old_head->m_dataSp : std::shared_ptr<T>();
@@ -169,14 +172,14 @@ class QueueLockFree {
   }
 
   /**
-     * @class QueueLockFree
-     * @brief A lock-free queue data structure implementation.
-     *
-     * This class provides a lock-free queue data structure, where multiple threads can
-     * simultaneously push and pop elements without encountering any races or deadlocks.
-     *
-     * @tparam T The type of the elements stored in the queue.
-     */
+   * @brief Pushes a new value into the lock-free queue.
+   *
+   * This function pushes a new value into the lock-free queue. It creates a new node with
+   * the given value, and updates the tail of the queue to point to this new node.
+   *
+   * @tparam T The type of the value to be pushed into the queue.
+   * @param new_value The new value to be pushed into the queue.
+   */
   void push(T new_value) {
     std::shared_ptr<T> new_data(std::make_shared<T>(new_value));
     node* p = new node;

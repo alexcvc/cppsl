@@ -36,6 +36,15 @@
 
 namespace cppsl::container {
 
+/**
+ * @class ListSafe
+ * @brief Thread-safe linked list class
+ *
+ * This class is designed to provide a thread-safe linked list that can be accessed concurrently by multiple threads.
+ * It uses locks to ensure that only one thread can modify the list at a time, preventing race conditions.
+ *
+ * @tparam T The type of elements in the list
+ */
 template <typename T>
 class ListSafe {
   struct node {
@@ -51,25 +60,34 @@ class ListSafe {
   node head;
 
  public:
-  ListSafe() {}
 
+  ListSafe() = default;
   ~ListSafe() {
     remove_if([](T const&) { return true; });
   }
 
-  /// @breaf    clean.
-  ///
-  /// @details  removes all from list
-  ///
+  /**
+   * @class ListSafe
+   * @brief Thread-safe linked list class
+   *
+   * This class is designed to provide a thread-safe linked list that can be accessed concurrently by multiple threads.
+   * It uses locks to ensure that only one thread can modify the list at a time, preventing race conditions.
+   *
+   * @tparam T The type of elements in the list
+   */
   void clean() {
     remove_if([](T const&) { return true; });
   }
 
-  /// @breaf    pushes in front.
-  ///
-  /// @details  implementation of threadsafe_list<T>::push_front
-  ///
-
+  /**
+   * @class ListSafe
+   * @brief Thread-safe linked list class
+   *
+   * This class is designed to provide a thread-safe linked list that can be accessed concurrently by multiple threads.
+   * It uses locks to ensure that only one thread can modify the list at a time, preventing race conditions.
+   *
+   * @param T The type of elements in the list
+   */
   void push_front(T const& value) {
     std::unique_ptr<node> new_node(new node(value));
 
@@ -78,10 +96,14 @@ class ListSafe {
     head.m_next = std::move(new_node);
   }
 
-  /// @breaf    runs for each.
-  ///
-  /// @details  implementation of for each in stack
-  ///
+  /**
+     * @file ListSafe.hpp
+     *
+     * @brief This file contains the implementation of a thread-safe linked list class.
+     *
+     * This class is designed to provide a thread-safe linked list that can be accessed concurrently by multiple threads.
+     * It uses locks to ensure that only one thread can modify the list at a time, preventing race conditions.
+     */
   template <typename Function>
   void for_each(Function f) {
     node* current = &head;
@@ -96,9 +118,14 @@ class ListSafe {
     }
   }
 
-  /// @brief  implementation of find first by condition
-  /// \tparam Predicate
-  /// \param p
+  /**
+   * @file ListSafe.hpp
+   *
+   * @brief This file contains the implementation of a thread-safe linked list class.
+   *
+   * This class is designed to provide a thread-safe linked list that can be accessed concurrently by multiple threads.
+   * It uses locks to ensure that only one thread can modify the list at a time, preventing race conditions.
+   */
   template <typename Predicate>
   std::shared_ptr<T> find_first_if(Predicate p) {
     node* current = &head;
@@ -117,21 +144,14 @@ class ListSafe {
   }
 
   /**
-   * @brief Removes elements from the list that satisfy the given condition.
-   *
-   * @details This function iterates over the list and removes the elements for which the predicate returns true.
-   *
-   * @tparam Predicate The type of the predicate function object.
-   * @param p The predicate function object that takes an element's value as a parameter and returns a bool.
-   *
-   * @note This function is thread-safe and can be called concurrently by multiple threads.
-   *
-   * @note The head node of the list is excluded from the removal process.
-   *
-   * @note This function acquires locks on the nodes to ensure exclusive access while removing elements.
-   *
-   * @note This function uses move semantics to efficiently transfer ownership of the next node pointers.
-   */
+    * @file ListSafe.hpp
+    *
+    * @brief This file contains the implementation of a thread-safe linked list class.
+    *
+    * This class is designed to provide a thread-safe linked list that can be accessed concurrently by multiple threads.
+    * It uses locks to ensure that only one thread can modify the list at a time, preventing race conditions.
+    *
+    */
   template <typename Predicate>
   void remove_if(Predicate p) {
     node* current = &head;
