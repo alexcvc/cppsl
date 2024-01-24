@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <array>
 #include <condition_variable>
-#include <cppsl/buffer/cycle_buffer.hpp>
+#include <cppsl/buffer/cyclicBuffer.hpp>
 #include <iostream>
 #include <memory>
 #include <random>
@@ -43,7 +43,7 @@ int main() {
   // configuration
   std::stop_source stop_src;   // Create a stop source
   std::array<std::jthread, total_threads> threads;
-  cppsl::buffer::Cycle_Buffer<Message, 64> cycle_buffer;
+  cppsl::buffer::CyclicBuffer<Message, 64> cycle_buffer;
 
   //----------------------------------------------------------
   // go to idle in main
@@ -74,7 +74,7 @@ int main() {
            }
            // even
            if (number % 2 == 0) {
-             if (auto write_available = cycle_buffer.writeAvailable(); write_available > 0) {
+             if (auto write_available = cycle_buffer.WriteAvailable(); write_available > 0) {
                Message message{0, std::string(50, ' ')};
                std::iota(message.data.begin(), message.data.end(), 0x32);
                std::shuffle(message.data.begin(), message.data.end(), std::mt19937{std::random_device{}()});
@@ -82,15 +82,15 @@ int main() {
 
                std::osyncstream(std::cout)
                   << "Task " << std::to_string(number) << " id=" << message.id << /*" :" << message.data
-                  << */"   : messages in buffer " << cycle_buffer.readAvailable() << std::endl;
-               cycle_buffer.insert(message);
+                  << */"   : messages in buffer " << cycle_buffer.ReadAvailable() << std::endl;
+               cycle_buffer.Insert(message);
              } else {
                std::osyncstream(std::cout)
                   << "Task " << std::to_string(number) << " cannot insert message" << std::endl;
              }
            } else {
              Message message;
-             if (cycle_buffer.readBuff(&message, 1) == 1) {
+             if (cycle_buffer.ReadBuff(&message, 1) == 1) {
                std::osyncstream(std::cout)
                   << "==> Task " << std::to_string(number) << " id=" << message.id /*" << :" << message.data*/ << std::endl;
              } else {
