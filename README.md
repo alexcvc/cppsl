@@ -10,7 +10,7 @@ The library contains classes that can be used starting with C++20 that are not c
 
 ## C++ Version
 
-C++20 
+Base compiler version is C++20. All tests will be created with respect on gcc compiler.
 
 ## Use in Targets Raspberry PI4 and BeagleBoard X15, BeagleBoard AI/AI64
 
