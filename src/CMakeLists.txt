@@ -11,9 +11,11 @@ set(${TargetName}_SRC
 )
 
 set(${TargetName}_HDR
-   "../include/cppsl/buffer/cyclicBuffer.hpp"
-   "../include/cppsl/buffer/ringBuffer.hpp"
-   "../include/cppsl/buffer/ringBuffer.tcc"
+   "../include/cppsl/buffer/cycle_buffer.hpp"
+   "../include/cppsl/buffer/cyclicBufferLockFree.hpp"
+   "../include/cppsl/buffer/cyclicBufferSafe.hpp"
+   "../include/cppsl/buffer/ring_buffer.hpp"
+   "../include/cppsl/buffer/ring_buffer.tcc"
    "../include/cppsl/console/menuDriver.hpp"
    "../include/cppsl/container/dequeSafe.hpp"
    "../include/cppsl/container/listSafe.hpp"
