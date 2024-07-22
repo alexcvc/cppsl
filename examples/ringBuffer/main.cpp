@@ -1,5 +1,5 @@
-#include <cppsl/buffer/cycle_buffer.hpp>
-#include <cppsl/buffer/ring_buffer.hpp>
+#include <cppsl/buffer/cyclicBuffer.hpp>
+#include <cppsl/buffer/ringBuffer.hpp>
 #include <cstring>
 #include <thread>
 

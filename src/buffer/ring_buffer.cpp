@@ -7,7 +7,7 @@
 
 #include <algorithm>
 #include <cassert>
-#include <cppsl/buffer/ring_buffer.hpp>
+#include <cppsl/buffer/ringBuffer.hpp>
 #include <mutex>
 
 #if defined(__cpp_if_constexpr)

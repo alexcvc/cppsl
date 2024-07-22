@@ -8,7 +8,7 @@
 #ifndef INCLUDE_CPPSL_RING_BUFFER_RING_BUFFER_TCC
 #define INCLUDE_CPPSL_RING_BUFFER_RING_BUFFER_TCC
 
-#include <cppsl/buffer/ring_buffer.hpp>
+#include <cppsl/buffer/ringBuffer.hpp>
 
 /**
  * @class Ring_Buffer_Ex

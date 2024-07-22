@@ -199,6 +199,6 @@ class Soft_Ring_Buffer_Ex final : private Basic_Ring_Buffer<Soft_Ring_Buffer_Ex<
 };
 
 //------------------------------------------------------------------------------
-#include <cppsl/buffer/ring_buffer.tcc>
+#include <cppsl/buffer/ringBuffer.tcc>
 
 #endif /* INCLUDE_CPPSL_RING_BUFFER_RING_BUFFER_HPP */

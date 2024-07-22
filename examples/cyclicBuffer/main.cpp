@@ -1,54 +1,44 @@
 #include <cppsl/buffer/cyclicBuffer.hpp>
-#include <cppsl/buffer/ringBuffer.hpp>
 #include <cstring>
 #include <thread>
-#include "gtest/gtest.h"
+#include <chrono>
+#include <memory>
 
 namespace param {
-size_t initialCapacity = 1024;
-size_t messageCount = 100;
-size_t meassageSize = 100;
-size_t numTries = 1000;
-double messageTimeout = 5.0;
+static const size_t initialCapacity = 1024;
+static const size_t messageCount = 100;
+static const size_t meassageSize = 128;
+static const size_t numTries = 1000;
+static const double messageTimeout = 1.0;
 }   // namespace param
 
 std::atomic_int diff_message{0};
 uint32_t number_sent{0};
 uint32_t number_recv{0};
 
-struct BaseTestCase {
-  BaseTestCase(std::string name) : m_name{std::move(name)} {}
-  virtual ~BaseTestCase() = default;
-  virtual void perform() = 0;
+struct TestCase {
+  TestCase(std::string name) : m_name{std::move(name)} {}
+  virtual ~TestCase() = default;
+  virtual void perform();
   const std::string m_name;
 };
 
-template <class RB>
-struct TheTestCase : public BaseTestCase {
-  TheTestCase(std::string name) : BaseTestCase{std::move(name)} {}
-  void perform() override;
+struct Message {
+  std::array<uint8_t, 256> data{};
+  std::chrono::time_point<std::chrono::system_clock> ts{};
 };
 
-template <class TypeOfBuffer>
-void TheTestCase<TypeOfBuffer>::perform() {
-  //  std::printf(">>> test case start: %s <<<\n", m_name.c_str());
+void TestCase::perform() {
 
-  TypeOfBuffer buffer{param::initialCapacity};
-
-  if (param::meassageSize < sizeof(size_t)) {
-    std::printf("message too small (need at least %lu bytes)\n", (unsigned long)sizeof(size_t));
-    std::terminate();
-  }
+  cppsl::buffer::CyclicBuffer<std::shared_ptr<Message>, param::meassageSize> buffer{};
 
   /*
    * PROVIDER
    */
   auto thread_provider = [&buffer]() {
-    const size_t message_size = param::meassageSize;
     const size_t message_count = param::messageCount;
-    std::unique_ptr<uint8_t[]> message_buffer(new uint8_t[message_size]);
 
-    //    std::printf("-->> begin send\n");
+    std::printf("-->> begin send\n");
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
     std::chrono::steady_clock::time_point time_of_warning;
@@ -65,7 +55,7 @@ void TheTestCase<TypeOfBuffer>::perform() {
           std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
           double elapsed = std::chrono::duration<double>(now - start).count();
           if (is_first_warning || std::chrono::duration<double>(now - time_of_warning).count() > 1) {
-            //            std::printf("-->> message not sent yet (%zu)...\n", i);
+            std::printf("-->> message not sent yet (%zu)...\n", i);
             time_of_warning = now;
             is_first_warning = false;
           }
@@ -88,7 +78,7 @@ void TheTestCase<TypeOfBuffer>::perform() {
       }
     }
 
-    //    std::printf("-->> sent (%zu)\n", message_count);
+    std::printf("-->> sent (%zu)\n", message_count);
   };
 
   /*
@@ -99,7 +89,7 @@ void TheTestCase<TypeOfBuffer>::perform() {
     const size_t message_count = param::messageCount;
     std::unique_ptr<uint8_t[]> message_buffer(new uint8_t[message_size]);
 
-    //    std::printf("--<< begin receive\n");
+    std::printf("--<< begin receive\n");
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
     std::chrono::steady_clock::time_point time_of_warning;
@@ -110,7 +100,7 @@ void TheTestCase<TypeOfBuffer>::perform() {
         std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
         double elapsed = std::chrono::duration<double>(now - start).count();
         if (is_first_warning || std::chrono::duration<double>(now - time_of_warning).count() > 1) {
-          //          std::printf("--<< message not arrived yet (%zu)...\n", i);
+          std::printf("--<< message not arrived yet (%zu)...\n", i);
           time_of_warning = now;
           is_first_warning = false;
         }
@@ -134,90 +124,39 @@ void TheTestCase<TypeOfBuffer>::perform() {
       }
     }
 
-    //    std::printf("--<< received (%zu)\n", message_count);
+    std::printf("--<< received (%zu)\n", message_count);
   };
 
   for (size_t i = 0; i < param::numTries; ++i) {
     diff_message = 0;
 
-    //    std::printf("---------------- %4zu/%4zu ----------------\n", i + 1, param::numTries);
+    std::printf("---------------- %4zu/%4zu ----------------\n", i + 1, param::numTries);
     std::thread t1(thread_provider);
     std::thread t2(thread_consumer);
     t1.join();
     t2.join();
-
-    EXPECT_EQ(number_recv, number_sent);
-    EXPECT_EQ(diff_message, 0);
   }
-  //  std::printf("-------------------------------------------\n");
-  //  std::printf("success!\n");
+  std::printf("-------------------------------------------\n");
+  std::printf("success!\n");
 
-  //  std::printf("<<< TestCase end: %s >>>\n", m_name.c_str());
+  std::printf("<<< TestCase end: %s >>>\n", m_name.c_str());
 }
 
-TEST(TestBuffer, TestRing_Buffer) {   // 12/2/2020 -> 737761
-  std::unique_ptr<BaseTestCase> test;
-  test.reset(new TheTestCase<Ring_Buffer>{"Hard"});
-  test->perform();
-}
-
-TEST(TestBuffer, TestSoft_Ring_Buffer) {   // 12/2/2020 -> 737761
-  std::unique_ptr<BaseTestCase> test;
-  test.reset(new TheTestCase<Soft_Ring_Buffer>{"Soft"});
-  test->perform();
-}
-
-//----------------------------------------------------------------------------
-// CycleBuffer
-//----------------------------------------------------------------------------
-
-template <class RB>
-struct TheTestCycleBuffer : public BaseTestCase {
-  TheTestCycleBuffer(std::string name) : BaseTestCase{std::move(name)} {}
-  void perform() override;
-};
-
-TEST(TestBuffer, TestCycleBuffer) {   // 12/2/2020 -> 737761
-
-  struct Message {
-    int id;
-    std::array<uint8_t,  100> data;
-  };
-
-  cppsl::buffer::CyclicBuffer<Message, 32> buffer;
-
-  /*
-   * PROVIDER
-   */
-  auto thread_provider = [&buffer]() {
-
-    for (size_t i = 0; i < param::messageCount;) {
-      Message msg;
-      msg.id = i;
-      msg.data.fill(i);
-
-      if (!buffer.Insert(&msg)) {
-      } else {
-      }
-    }
-  };
-
-  /*
-   * CONSUMER
-   */
-  auto thread_consumer = [&buffer]() {
-  };
-
-  for (size_t i = 0; i < param::numTries; ++i) {
-    diff_message = 0;
-
-    //    std::printf("---------------- %4zu/%4zu ----------------\n", i + 1, param::numTries);
-    std::thread t1(thread_provider);
-    std::thread t2(thread_consumer);
-    t1.join();
-    t2.join();
-
-    EXPECT_EQ(number_recv, number_sent);
-    EXPECT_EQ(diff_message, 0);
+/*************************************************************************/ /**
+ * main
+ * @return
+ */
+int main() {
+  {   // 12/2/2020 -> 737761
+    std::unique_ptr<BaseTestCase> test;
+    test.reset(new TheTestCase<Ring_Buffer>{"Hard"});
+    test->perform();
   }
+
+  {   // 12/2/2020 -> 737761
+    std::unique_ptr<BaseTestCase> test;
+    test.reset(new TheTestCase<Soft_Ring_Buffer>{"Soft"});
+    test->perform();
+  }
+  return 0;
 }

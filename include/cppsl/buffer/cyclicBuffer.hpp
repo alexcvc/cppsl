@@ -1,26 +1,29 @@
 /*************************************************************************/ /**
  * @file    
- * @brief   contains Simple SPSC cycle buffer implementation .
+ * @brief   contains cyclic buffer implementation .
+ * Originally inspired by the work of Jan Oleksiewicz. 
+ * However, further functionality for embedded multi-threaded SCADA tasks 
+ * was needed for this. These have been developed by Alexander Sacharov.  
  * @author  Jan Oleksiewicz <jnk0le@hotmail.com>
- * @date    22 Jun 2017
+ *          Alexander Sacharov <a.sacharov@gmx.de>     
+ * @date    2024-01-24
  * @license SPDX-License-Identifier: MIT
- * @ingroup 
  *****************************************************************************/
 
 /**
- * # Ring Buffer
+ * # cyclic buffer
  * 
  * - pure C++11, no OS dependency
  * - no exceptions, RTTI, virtual functions and dynamic memory allocation
- * - designed for compile time (static) allocation and type evaluation
+ * - designed for compile time (static vector) allocation and type evaluation
  * - no wasted slots (in powers of 2 granularity)
  * - lock and wait operation
  * - under-run and overrun checks in insert/remove functions
- * - highly efficient on most microcontroller architectures (nearly equal performance as in 'wasted-slot' implemetation)
+ * - highly efficient on most microcontroller architectures
  * 
  * ## notes
  * 
- * - index_t of size less than architecture reg size (size_t) might not be most efficient
+ * - IndexType of size less than architecture reg size (size_t) might not be most efficient
  *   ([known gcc bug](https://gcc.gnu.org/bugzilla/show_bug.cgi?id=71942))
  * - Only lamda expressions or functor callbacks can be inlined into `buffWrite`/`buffRead` functions
  * - 8 bit architectures are not supported in master branch at the moment. Broken code is likely to be generated
@@ -44,7 +47,7 @@
  *   }
  * }
  * 
- * extern "C" void SysTick_Handler(void)
+ * extern "C" void SysTick_Handler()
  * {
  *   message.insert("SysTick_Handler");
  * }
@@ -54,9 +57,10 @@
 #ifndef INCLUDE_CPPSL_BUFFER_RINGBUFFER_HPP
 #define INCLUDE_CPPSL_BUFFER_RINGBUFFER_HPP
 
-#include <stddef.h>
-#include <stdint.h>
+#include <array>
 #include <atomic>
+#include <cstddef>
+#include <cstdint>
 #include <limits>
 
 namespace cppsl::buffer {
@@ -66,23 +70,21 @@ namespace cppsl::buffer {
  * \brief A cyclic buffer implementation for storing elements of type T
  *
  * The CycleBuffer class provides a thread-safe cyclic buffer for storing elements of type T. The buffer has a fixed size
- * specified by the buffer_size template parameter. The buffer uses atomic operations to ensure thread safety and provides
+ * specified by the BufferSize template parameter. The buffer uses atomic operations to ensure thread safety and provides
  * methods for inserting and removing elements from the buffer.
  *
  * \tparam T The type of the elements stored in the buffer
- * \tparam buffer_size The size of the buffer (default: 16)
- * \tparam use_relaxed_mem_order A flag indicating whether to use a fake total store order (default: false)
- * \tparam align_size The size of the cache line (default: 0)
- * \tparam index_t The type used for indexing the buffer (default: size_t)
+ * \tparam BufferSize The size of the buffer (default: 16)
+ * \tparam UseRelaxedMemOrder A flag indicating whether to use a fake total store order (default: false)
+ * \tparam IndexType The type used for indexing the buffer (default: size_t)
  */
-template <typename T, size_t buffer_size = 16, bool use_relaxed_mem_order = false, size_t align_size = 0,
-          typename index_t = size_t>
-class Cycle_Buffer {
+template <typename T, size_t BufferSize = 16, bool UseRelaxedMemOrder = false, typename IndexType = size_t>
+class CyclicBuffer {
  public:
   /**
    * \brief Default constructor, will initialize head and tail indexes
    */
-  Cycle_Buffer() : head(0), tail(0) {}
+  CyclicBuffer() : head(0), tail(0) {}
 
   /**
    * \brief Special case constructor to premature out unnecessary initialization code when object is
@@ -91,47 +93,47 @@ class Cycle_Buffer {
    * explicitly cleared before use
    * \param dummy Ignored
    */
-  Cycle_Buffer(int dummy) { (void)(dummy); }
+  CyclicBuffer(int dummy) { (void)(dummy); }
 
   /**
    * \brief Clear buffer from producer side
    * \warning function may return without performing any action if consumer tries to read data at the same time
    */
-  void producerClear(void) {
+  void ProducerClear() {
     // head modification will lead to underflow if cleared during consumer read
     // doing this properly with CAS is not possible without modifying the consumer code
-    consumerClear();
+    ConsumerClear();
   }
 
   /**
    * \brief Clear buffer from consumer side
    */
-  void consumerClear(void) { tail.store(head.load(std::memory_order_relaxed), std::memory_order_relaxed); }
+  void ConsumerClear() { tail.store(head.load(std::memory_order_relaxed), std::memory_order_relaxed); }
 
   /**
    * \brief Check if buffer is empty
    * \return True if buffer is empty
    */
-  bool isEmpty(void) const { return readAvailable() == 0; }
+  bool IsEmpty() const { return ReadAvailable() == 0; }
 
   /**
    * \brief Check if buffer is full
    * \return True if buffer is full
    */
-  bool isFull(void) const { return writeAvailable() == 0; }
+  bool isFull() const { return WriteAvailable() == 0; }
 
   /**
    * \brief Check how many elements can be read from the buffer
    * \return Number of elements that can be read
    */
-  index_t readAvailable(void) const { return head.load(index_acquire_barrier) - tail.load(std::memory_order_relaxed); }
+  IndexType ReadAvailable() const { return head.load(index_acquire_barrier) - tail.load(std::memory_order_relaxed); }
 
   /**
    * \brief Check how many elements can be written into the buffer
    * \return Number of free slots that can be be written
    */
-  index_t writeAvailable(void) const {
-    return buffer_size - (head.load(std::memory_order_relaxed) - tail.load(index_acquire_barrier));
+  IndexType WriteAvailable() const {
+    return BufferSize - (head.load(std::memory_order_relaxed) - tail.load(index_acquire_barrier));
   }
 
   /**
@@ -139,10 +141,10 @@ class Cycle_Buffer {
    * \param data element to be inserted into internal buffer
    * \return True if data was inserted
    */
-  bool insert(T data) {
-    index_t tmp_head = head.load(std::memory_order_relaxed);
+  bool Insert(T data) {
+    IndexType tmp_head = head.load(std::memory_order_relaxed);
 
-    if ((tmp_head - tail.load(index_acquire_barrier)) == buffer_size)
+    if ((tmp_head - tail.load(index_acquire_barrier)) == BufferSize)
       return false;
     else {
       data_buff[tmp_head++ & buffer_mask] = data;
@@ -157,10 +159,10 @@ class Cycle_Buffer {
    * \param[in] data Pointer to memory location where element, to be inserted into internal buffer, is located
    * \return True if data was inserted
    */
-  bool insert(const T* data) {
-    index_t tmp_head = head.load(std::memory_order_relaxed);
+  bool Insert(const T* data) {
+    IndexType tmp_head = head.load(std::memory_order_relaxed);
 
-    if ((tmp_head - tail.load(index_acquire_barrier)) == buffer_size)
+    if ((tmp_head - tail.load(index_acquire_barrier)) == BufferSize)
       return false;
     else {
       data_buff[tmp_head++ & buffer_mask] = *data;
@@ -179,10 +181,10 @@ class Cycle_Buffer {
    * \param get_data_callback Pointer to callback function that returns element to be inserted into buffer
    * \return True if data was inserted and callback called
    */
-  bool insertFromCallbackWhenAvailable(T (*get_data_callback)(void)) {
-    index_t tmp_head = head.load(std::memory_order_relaxed);
+  bool Insert(T (*get_data_callback)()) {
+    IndexType tmp_head = head.load(std::memory_order_relaxed);
 
-    if ((tmp_head - tail.load(index_acquire_barrier)) == buffer_size)
+    if ((tmp_head - tail.load(index_acquire_barrier)) == BufferSize)
       return false;
     else {
       //execute callback only when there is space in buffer
@@ -197,8 +199,8 @@ class Cycle_Buffer {
    * \brief Removes single element without reading
    * \return True if one element was removed
    */
-  bool remove() {
-    index_t tmp_tail = tail.load(std::memory_order_relaxed);
+  bool Remove() {
+    IndexType tmp_tail = tail.load(std::memory_order_relaxed);
 
     if (tmp_tail == head.load(std::memory_order_relaxed))
       return false;
@@ -213,9 +215,9 @@ class Cycle_Buffer {
    * \param cnt Maximum number of elements to remove
    * \return Number of removed elements
    */
-  size_t remove(size_t cnt) {
-    index_t tmp_tail = tail.load(std::memory_order_relaxed);
-    index_t avail = head.load(std::memory_order_relaxed) - tmp_tail;
+  size_t Remove(size_t cnt) {
+    IndexType tmp_tail = tail.load(std::memory_order_relaxed);
+    IndexType avail = head.load(std::memory_order_relaxed) - tmp_tail;
 
     cnt = (cnt > avail) ? avail : cnt;
 
@@ -228,7 +230,7 @@ class Cycle_Buffer {
    * \param[out] data Reference to memory location where removed element will be stored
    * \return True if data was fetched from the internal buffer
    */
-  bool remove(T& data) {
+  bool Remove(T& data) {
     return remove(&data);   // references are anyway implemented as pointers
   }
 
@@ -237,8 +239,8 @@ class Cycle_Buffer {
    * \param[out] data Pointer to memory location where removed element will be stored
    * \return True if data was fetched from the internal buffer
    */
-  bool remove(T* data) {
-    index_t tmp_tail = tail.load(std::memory_order_relaxed);
+  bool Remove(T* data) {
+    IndexType tmp_tail = tail.load(std::memory_order_relaxed);
 
     if (tmp_tail == head.load(index_acquire_barrier))
       return false;
@@ -257,8 +259,8 @@ class Cycle_Buffer {
    *
    * \return Pointer to first element, nullptr if buffer was empty
    */
-  T* peek() {
-    index_t tmp_tail = tail.load(std::memory_order_relaxed);
+  T* GetFirst() {
+    IndexType tmp_tail = tail.load(std::memory_order_relaxed);
 
     if (tmp_tail == head.load(index_acquire_barrier))
       return nullptr;
@@ -274,8 +276,8 @@ class Cycle_Buffer {
    * \param index Item offset starting on the consumed side
    * \return Pointer to requested element, nullptr if index exceeds storage count
    */
-  T* at(size_t index) {
-    index_t tmp_tail = tail.load(std::memory_order_relaxed);
+  T* AtPos(size_t index) {
+    IndexType tmp_tail = tail.load(std::memory_order_relaxed);
 
     if ((head.load(index_acquire_barrier) - tmp_tail) <= index)
       return nullptr;
@@ -288,7 +290,7 @@ class Cycle_Buffer {
    *
    * Unchecked operation, assumes that software already knows if the element can be used, if
    * requested index is out of bounds then reference will point to somewhere inside the buffer
-   * The isEmpty() and readAvailable() will place appropriate memory barriers if used as loop limiter
+   * The empty() and ReadAvailable() will place appropriate memory barriers if used as loop limiter
    * It is safe to use and modify T contents only on consumer side
    *
    * \param index Item offset starting on the consumed side
@@ -305,7 +307,7 @@ class Cycle_Buffer {
    * \param count Number of elements to write from the given buffer
    * \return Number of elements written into internal buffer
    */
-  size_t writeBuff(const T* buff, size_t count);
+  size_t WriteBuff(const T* buff, size_t count);
 
   /**
    * \brief Insert multiple elements into internal buffer without blocking
@@ -321,7 +323,7 @@ class Cycle_Buffer {
    * \param execute_data_callback Pointer to callback function executed after every loop iteration
    * \return Number of elements written into internal  buffer
    */
-  size_t writeBuff(const T* buff, size_t count, size_t count_to_callback, void (*execute_data_callback)(void));
+  size_t WriteBuff(const T* buff, size_t count, size_t count_to_callback, void (*execute_data_callback)());
 
   /**
    * \brief Load multiple elements from internal buffer without blocking
@@ -332,7 +334,7 @@ class Cycle_Buffer {
    * \param count Number of elements to load into the given buffer
    * \return Number of elements that were read from internal buffer
    */
-  size_t readBuff(T* buff, size_t count);
+  size_t ReadBuff(T* buff, size_t count);
 
   /**
    * \brief Load multiple elements from internal buffer without blocking
@@ -349,34 +351,30 @@ class Cycle_Buffer {
    * \param execute_data_callback Pointer to callback function executed after every loop iteration
    * \return Number of elements that were read from internal buffer
    */
-  size_t readBuff(T* buff, size_t count, size_t count_to_callback, void (*execute_data_callback)(void));
+  size_t ReadBuff(T* buff, size_t count, size_t count_to_callback, void (*execute_data_callback)());
 
  private:
-  constexpr static index_t buffer_mask = buffer_size - 1;   //!< bitwise mask for a given buffer size
+  constexpr static IndexType buffer_mask = BufferSize - 1;   ///< bitwise mask for a given buffer size
   constexpr static std::memory_order index_acquire_barrier =
-     use_relaxed_mem_order
+     UseRelaxedMemOrder
         ? std::memory_order_relaxed
-        : std::memory_order_acquire;   // do not load from, or store to buffer before confirmed by the opposite side
+        : std::memory_order_acquire;   ///< do not load from, or store to buffer before confirmed by the opposite side
   constexpr static std::memory_order index_release_barrier =
-     use_relaxed_mem_order
+     UseRelaxedMemOrder
         ? std::memory_order_relaxed
-              : std::memory_order_release;   // do not update own side before all operations on data_buff committed
+        : std::memory_order_release;     ///< do not update own side before all operations on data_buff committed
+  std::atomic<IndexType> head;           ///< head index
+  std::atomic<IndexType> tail;           ///< tail index
+  std::array<T, BufferSize> data_buff;   ///< cyclic buffer
 
-  alignas(align_size) std::atomic<index_t> head;   //!< head index
-  alignas(align_size) std::atomic<index_t> tail;   //!< tail index
-
-  // put buffer after variables so everything can be reached with short offsets
-  alignas(align_size) T data_buff[buffer_size];   //!< actual buffer
-
-  // let's assert that no UB will be compiled in
-  static_assert((buffer_size != 0), "buffer cannot be of zero size");
-  static_assert((buffer_size & buffer_mask) == 0, "buffer size is not a power of 2");
-  static_assert(sizeof(index_t) <= sizeof(size_t),
+  // asserts that vot will be compiled
+  static_assert((BufferSize != 0), "buffer cannot be of zero size");
+  static_assert((BufferSize & buffer_mask) == 0, "buffer size is not a power of 2");
+  static_assert(sizeof(IndexType) <= sizeof(size_t),
                 "indexing type size is larger than size_t, operation is not lock free and doesn't make sense");
-
-  static_assert(std::numeric_limits<index_t>::is_integer, "indexing type is not integral type");
-  static_assert(!(std::numeric_limits<index_t>::is_signed), "indexing type shall not be signed");
-  static_assert(buffer_mask <= ((std::numeric_limits<index_t>::max)() >> 1),
+  static_assert(std::numeric_limits<IndexType>::is_integer, "indexing type is not integral type");
+  static_assert(!(std::numeric_limits<IndexType>::is_signed), "indexing type shall not be signed");
+  static_assert(buffer_mask <= ((std::numeric_limits<IndexType>::max)() >> 1),
                 "buffer size is too large for a given indexing type (maximum size for n-bit type is 2^(n-1))");
 };
 
@@ -386,23 +384,24 @@ class Cycle_Buffer {
  * This function writes the provided data to the cyclic buffer.
  *
  * @tparam T The type of data stored in the buffer.
- * @tparam buffer_size The size of the buffer.
- * @tparam use_relaxed_mem_order Boolean value indicating whether use_relaxed_mem_order is enabled or not.
- * @tparam align_size The size of the alignment.
- * @tparam index_t The type of index used to access the buffer.
+ * @tparam BufferSize The size of the buffer.
+ * @tparam UseRelaxedMemOrder Boolean value indicating whether UseRelaxedMemOrder is enabled or not.
+ * @tparam AlignSize The size of the alignment.
+ * @tparam IndexType The type of index used to access the buffer.
  *
  * @param buff A pointer to the data to be written.
  * @param count The number of elements to be written.
  *
  * @return The number of elements written to the buffer.
  */
-template <typename T, size_t buffer_size, bool use_relaxed_mem_order, size_t align_size, typename index_t>
-size_t Cycle_Buffer<T, buffer_size, use_relaxed_mem_order, align_size, index_t>::writeBuff(const T* buff, size_t count) {
-  index_t available = 0;
-  index_t tmp_head = head.load(std::memory_order_relaxed);
+template <typename T, size_t BufferSize, bool UseRelaxedMemOrder, typename IndexType>
+size_t CyclicBuffer<T, BufferSize, UseRelaxedMemOrder, IndexType>::WriteBuff(const T* buff, size_t count) {
+
+  IndexType available = 0;
+  IndexType tmp_head = head.load(std::memory_order_relaxed);
   size_t to_write = count;
 
-  available = buffer_size - (tmp_head - tail.load(index_acquire_barrier));
+  available = BufferSize - (tmp_head - tail.load(index_acquire_barrier));
 
   if (available < count)   // do not write more than we can
     to_write = available;
@@ -417,20 +416,20 @@ size_t Cycle_Buffer<T, buffer_size, use_relaxed_mem_order, align_size, index_t>:
   return to_write;
 }
 
-template <typename T, size_t buffer_size, bool use_relaxed_mem_order, size_t align_size, typename index_t>
-size_t Cycle_Buffer<T, buffer_size, use_relaxed_mem_order, align_size, index_t>::writeBuff(const T* buff, size_t count,
-                                                                                 size_t count_to_callback,
-                                                                                 void (*execute_data_callback)()) {
+template <typename T, size_t BufferSize, bool UseRelaxedMemOrder, typename IndexType>
+size_t CyclicBuffer<T, BufferSize, UseRelaxedMemOrder, IndexType>::WriteBuff(
+   const T* buff, size_t count, size_t count_to_callback, void (*execute_data_callback)()) {
+
   size_t written = 0;
-  index_t available = 0;
-  index_t tmp_head = head.load(std::memory_order_relaxed);
+  IndexType available = 0;
+  IndexType tmp_head = head.load(std::memory_order_relaxed);
   size_t to_write = count;
 
   if (count_to_callback != 0 && count_to_callback < count)
     to_write = count_to_callback;
 
   while (written < count) {
-    available = buffer_size - (tmp_head - tail.load(index_acquire_barrier));
+    available = BufferSize - (tmp_head - tail.load(index_acquire_barrier));
 
     if (available == 0)   // less than ??
       break;
@@ -453,10 +452,11 @@ size_t Cycle_Buffer<T, buffer_size, use_relaxed_mem_order, align_size, index_t>:
   return written;
 }
 
-template <typename T, size_t buffer_size, bool use_relaxed_mem_order, size_t align_size, typename index_t>
-size_t Cycle_Buffer<T, buffer_size, use_relaxed_mem_order, align_size, index_t>::readBuff(T* buff, size_t count) {
-  index_t available = 0;
-  index_t tmp_tail = tail.load(std::memory_order_relaxed);
+template <typename T, size_t BufferSize, bool UseRelaxedMemOrder, typename IndexType>
+size_t CyclicBuffer<T, BufferSize, UseRelaxedMemOrder, IndexType>::ReadBuff(T* buff, size_t count) {
+
+  IndexType available = 0;
+  IndexType tmp_tail = tail.load(std::memory_order_relaxed);
   size_t to_read = count;
 
   available = head.load(index_acquire_barrier) - tmp_tail;
@@ -474,13 +474,12 @@ size_t Cycle_Buffer<T, buffer_size, use_relaxed_mem_order, align_size, index_t>:
   return to_read;
 }
 
-template <typename T, size_t buffer_size, bool use_relaxed_mem_order, size_t align_size, typename index_t>
-size_t Cycle_Buffer<T, buffer_size, use_relaxed_mem_order, align_size, index_t>::readBuff(T* buff, size_t count,
-                                                                                size_t count_to_callback,
-                                                                                void (*execute_data_callback)()) {
+template <typename T, size_t BufferSize, bool UseRelaxedMemOrder, typename IndexType>
+size_t CyclicBuffer<T, BufferSize, UseRelaxedMemOrder, IndexType>::ReadBuff(
+   T* buff, size_t count, size_t count_to_callback, void (*execute_data_callback)()) {
   size_t read = 0;
-  index_t available = 0;
-  index_t tmp_tail = tail.load(std::memory_order_relaxed);
+  IndexType available = 0;
+  IndexType tmp_tail = tail.load(std::memory_order_relaxed);
   size_t to_read = count;
 
   if (count_to_callback != 0 && count_to_callback < count)
