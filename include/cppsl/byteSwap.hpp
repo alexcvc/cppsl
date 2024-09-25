@@ -14,8 +14,7 @@
  * \ingroup
  *****************************************************************************/
 
-#ifndef INCLUDE_CPPSL_SYS_ENDIAN_HPP
-#define INCLUDE_CPPSL_SYS_ENDIAN_HPP
+#pragma once
 
 /**
  * starting C++20
@@ -177,4 +176,3 @@ namespace detail {
   }
 }  // namespace cppsl
 
-#endif /* INCLUDE_CPPSL_SYS_ENDIAN_HPP */
