@@ -39,46 +39,46 @@ void dump(T v, char term = '\n') {
  * @return
  */
 int main() {
-  std::cout << "ByteSwap for U8:\n";
+  std::cout << "ByteSwapper for U8:\n";
   uint8_t i = 0xAB;
   dump(i);
-  dump(cppsl::ByteSwap<std::endian::little, std::endian::big>(i));
-  dump(cppsl::ByteSwap(i));
+  dump(cppsl::ByteSwapper::Swap<std::endian::little, std::endian::big>(i));
+  dump(cppsl::ByteSwapper(i));
 
-  std::cout << "\nByteSwap for U16:\n";
+  std::cout << "\nByteSwapper for U16:\n";
   auto x = std::uint16_t{0x0123};
   dump(x);
-  dump(cppsl::ByteSwap<std::endian::little, std::endian::big>(x));
-  dump(cppsl::ByteSwap(x));
+  dump(cppsl::ByteSwapper<std::endian::little, std::endian::big>(x));
+  dump(cppsl::ByteSwapper(x));
 
-  std::cout << "\nByteSwap for U32:\n";
+  std::cout << "\nByteSwapper for U32:\n";
   auto j = std::uint32_t{0x01234567u};
   dump(j);
-  dump(cppsl::ByteSwap<std::endian::little, std::endian::big>(j));
-  dump(cppsl::ByteSwap(j));
+  dump(cppsl::ByteSwapper<std::endian::little, std::endian::big>(j));
+  dump(cppsl::ByteSwapper(j));
 
-  std::cout << "\nByteSwap for U64:\n";
+  std::cout << "\nByteSwapper for U64:\n";
   constexpr auto z = std::uint64_t{0x0123456789ABCDEFull};
   dump(z);
-  dump(cppsl::ByteSwap<std::endian::little, std::endian::big>(z));
-  dump(cppsl::ByteSwap(z));
+  dump(cppsl::ByteSwapper<std::endian::little, std::endian::big>(z));
+  dump(cppsl::ByteSwapper(z));
 
-  std::cout << "\nByteSwap for float:\n";
+  std::cout << "\nByteSwapper for float:\n";
   constexpr auto f = float{0.1234567890};
   dump(f);
-  dump(cppsl::ByteSwap<std::endian::little, std::endian::big>(f));
-  dump(cppsl::ByteSwap(f));
+  dump(cppsl::ByteSwapper<std::endian::little, std::endian::big>(f));
+  dump(cppsl::ByteSwapper(f));
 
-  std::cout << "\nByteSwap for double:\n";
+  std::cout << "\nByteSwapper for double:\n";
   constexpr auto d = double{0.1234567890123456789};
   dump(d);
-  dump(cppsl::ByteSwap<std::endian::little, std::endian::big>(d));
+  dump(cppsl::ByteSwapper<std::endian::little, std::endian::big>(d));
 
-  std::cout << "\nByteSwap to host byte ordering:\n";
-  dump(cppsl::ByteSwap<std::endian::little, std::endian::native>(d));
+  std::cout << "\nByteSwapper to host byte ordering:\n";
+  dump(cppsl::ByteSwapper<std::endian::little, std::endian::native>(d));
 
-  std::cout << "\nByteSwap always:\n";
-  dump(cppsl::ByteSwap(d));
+  std::cout << "\nByteSwapper always:\n";
+  dump(cppsl::ByteSwapper(d));
 
   return (0);
 }

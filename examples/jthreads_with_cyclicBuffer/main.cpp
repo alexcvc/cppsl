@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <array>
 #include <condition_variable>
-#include <cppsl/buffer/cyclicBuffer.hpp>
+#include <cppsl/container/circularBuffer.hpp>
 #include <iostream>
 #include <memory>
 #include <random>
@@ -9,7 +9,7 @@
 #include <thread>
 
 using namespace std::chrono_literals;
-using namespace cppsl::buffer;
+using namespace cppsl;
 
 //-----------------------------------------------------------------------------
 // local Typedefs, Enums, Unions

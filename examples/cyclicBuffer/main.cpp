@@ -1,8 +1,11 @@
-#include <cppsl/buffer/cyclicBuffer.hpp>
-#include <cstring>
-#include <thread>
+#include <array>
 #include <chrono>
+#include <cppsl/container/circularBuffer.hpp>
+#include <cstring>
 #include <memory>
+#include <thread>
+
+#include "cppsl/container/listSafe.hpp"
 
 namespace param {
 static const size_t initialCapacity = 1024;
@@ -30,7 +33,7 @@ struct Message {
 
 void TestCase::perform() {
 
-  cppsl::buffer::CyclicBuffer<std::shared_ptr<Message>, param::meassageSize> buffer{};
+  cppsl::container::CyclicBuffer<std::shared_ptr<Message>, param::meassageSize> buffer{};
 
   /*
    * PROVIDER

@@ -8,44 +8,16 @@
 
 /*************************************************************************/ /**
  * @file
- * \brief   contains byte swap (as starting C++20).
- * \author  Alexander Sacharov
- * \date    2022-01-11
- * \ingroup
+ * @brief  contains byte swap class.
+ * @ingroup CPPSL
  *****************************************************************************/
 
 #pragma once
 
-/**
- * starting C++20
- *
- *     if constexpr (std::endian::native == std::endian::big)
- *         std::cout << "big-endian\n";
- *     else if constexpr (std::endian::native == std::endian::little)
- *         std::cout << "little-endian\n";
- *     else
- *         std::cout << "mixed-endian\n";
- *
- */
-
 //-----------------------------------------------------------------------------
 // includes <...>
 //-----------------------------------------------------------------------------
-#include <stdlib.h>
 #include <bit>
-#include <stdexcept>
-
-//-----------------------------------------------------------------------------
-// includes "..."
-//-----------------------------------------------------------------------------
-
-//----------------------------------------------------------------------------
-// Public defines and macros
-//----------------------------------------------------------------------------
-
-//----------------------------------------------------------------------------
-// Public typedefs, structs, enums, unions and variables
-//----------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------
 // Public Function Prototypes
@@ -53,126 +25,65 @@
 
 namespace cppsl {
 
-namespace detail {
+/**
+ * @class ByteSwapper
+ * @brief A class for swapping bytes based on the endianness
+ *
+ * This class provides a static method for swapping bytes in a value based on the endianness of the machine,
+ * as well as an enum class for specifying the swap type.
+ */
+class ByteSwapper {
+ public:
+  enum class SwapType {
+    BE,   ///< swap for big endian machines
+    LE,   ///< swap for little endian machines
+    AX,   ///< swap always
+    NX    ///< swap never
+  };
 
-    template<typename T, size_t sz>
-    struct swap {
-      inline T operator()(T val) {
-        throw std::out_of_range("data size");
-      }
-    };
+  /**
+   * @brief A class for swapping bytes based on the endianness
+   *
+   * This class provides a static method for swapping bytes in a value based on the endianness of the machine,
+   * as well as an enum class for specifying the swap type.
+   */
+  template <typename T>
+  static T Swap(T val, SwapType swapType) {
+    if (swapType == SwapType::NX) {
+      return val;
+    }
 
-    template<typename T>
-    struct swap<T, 1> {
-      inline T operator()(T val) {
-        return val;
-      }
-    };
+    T ret = val;
+    auto ptr = reinterpret_cast<uint8_t*>(&ret);
+    const auto size = sizeof(T);
 
-    template<typename T>
-    struct swap<T, 2> // for 16 bit
-    {
-      inline T operator()(T val) {
-        return ((((val) >> 8) & 0xff) | (((val) & 0xff) << 8));
-      }
-    };
+    if constexpr (std::endian::native == std::endian::big) {
+      if (swapType == SwapType::BE || swapType == SwapType::AX)
+        SwapBytes(ptr, size);
+    } else if constexpr (std::endian::native == std::endian::little) {
+      if (swapType == SwapType::LE || swapType == SwapType::AX)
+        SwapBytes(ptr, size);
+    }
 
-    template<typename T>
-    struct swap<T, 4> // for 32 bit
-    {
-      inline T operator()(T val) {
-        return ((((val) & 0xff000000) >> 24) |
-           (((val) & 0x00ff0000) >> 8) |
-           (((val) & 0x0000ff00) << 8) |
-           (((val) & 0x000000ff) << 24));
-      }
-    };
-
-    template<>
-    struct swap<float, 4> {
-      inline float operator()(float val) {
-        uint32_t mem = swap<uint32_t, sizeof(uint32_t)>()(*(uint32_t *) &val);
-        return *(float *) &mem;
-      }
-    };
-
-    template<typename T>
-    struct swap<T, 8> // for 64 bit
-    {
-      inline T operator()(T val) {
-        return ((((val) & 0xff00000000000000ull) >> 56) |
-           (((val) & 0x00ff000000000000ull) >> 40) |
-           (((val) & 0x0000ff0000000000ull) >> 24) |
-           (((val) & 0x000000ff00000000ull) >> 8) |
-           (((val) & 0x00000000ff000000ull) << 8) |
-           (((val) & 0x0000000000ff0000ull) << 24) |
-           (((val) & 0x000000000000ff00ull) << 40) |
-           (((val) & 0x00000000000000ffull) << 56));
-      }
-    };
-
-    template<>
-    struct swap<double, 8> {
-      inline double operator()(double val) {
-        uint64_t mem = swap<uint64_t, sizeof(uint64_t)>()(*(uint64_t *) &val);
-        return *(double *) &mem;
-      }
-    };
-
-    template<class T>
-    struct do_swap_always {
-      inline T operator()(T value) {
-        return swap<T, sizeof(T)>()(value);
-      }
-    };
-
-    template <std::endian from, std::endian to, class T>
-    struct do_swap {
-      inline T operator()(T value) {
-        return swap<T, sizeof(T)>()(value);
-      }
-    };
-
-    // specialisations when attempting to swap to the same byte ordering
-
-    // little -> little
-    template<class T>
-    struct do_swap<std::endian::little, std::endian::little, T> {
-      inline T operator()(T value) { return value; }
-    };
-
-    // big -> big
-    template<class T>
-    struct do_swap<std::endian::big, std::endian::big, T> {
-      inline T operator()(T value) { return value; }
-    };
-
-    } // namespace detail
-
-  /// swap anyway
-  /// \tparam T 
-  /// \param value 
-  template<class T>
-    inline T ByteSwap(T value) {
-      // ensure the data is only 1, 2, 4 or 8 bytes
-    static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8, "data is only 1, 2, 4 or 8 bytes");
-    // ensure we're only swapping arithmetic types
-    static_assert(std::is_arithmetic<T>::value, "only swapping arithmetic types");
-
-    return detail::do_swap_always<T>()(value);
+    return ret;
   }
 
-  /// swap from to byte ordering
-  /// \tparam T 
-  /// \param value
-  template <std::endian from, std::endian to, class T>
-  inline T ByteSwap(T value) {
-    // ensure the data is only 1, 2, 4 or 8 bytes
-    static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8, "data is only 1, 2, 4 or 8 bytes");
-    // ensure we're only swapping arithmetic types
-    static_assert(std::is_arithmetic<T>::value, "only swapping arithmetic types");
-
-    return detail::do_swap<from, to, T>()(value);
+  /**
+   * @fn swapBytes
+   * @brief A helper method to swap bytes
+   * Swaps the bytes in the given buffer.
+   *
+   * This function swaps the bytes in the given buffer of the specified size.
+   *
+   * @param ptr The pointer to the buffer of bytes to be swapped.
+   * @param size The size of the buffer in bytes.
+   * @return None.
+   */
+  static void SwapBytes(uint8_t* ptr, size_t size) {
+    for (size_t i = 0; i < size / 2; ++i) {
+      std::swap(ptr[i], ptr[size - i - 1]);
+    }
   }
-}  // namespace cppsl
+};
 
+}   // namespace cppsl
