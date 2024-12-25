@@ -13,8 +13,7 @@
 * @ingroup COM4CPP Library
 *****************************************************************************/
 
-#ifndef INCLUDE_CPPSL_CONCURENCY_LIST_LOCK_HPP
-#define INCLUDE_CPPSL_CONCURENCY_LIST_LOCK_HPP
+#pragma once
 
 //-----------------------------------------------------------------------------
 // includes <...>
@@ -60,7 +59,6 @@ class ListSafe {
   node head;
 
  public:
-
   ListSafe() = default;
   ~ListSafe() {
     remove_if([](T const&) { return true; });
@@ -176,5 +174,3 @@ class ListSafe {
 };
 
 }   // namespace cppsl::container
-
-#endif /* INCLUDE_CPPSL_CONCURENCY_LIST_LOCK_HPP */

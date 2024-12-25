@@ -37,10 +37,10 @@ template <typename T>
  * - The empty and full functions first load the read and write indices to calculate the current buffer size.
  */
 class CircularBufferLF {
-  const size_t m_capacity;           ///< The size of the circular buffer.
-  std::vector<T> m_buffer;           ///< The buffer storing the items.
-  std::atomic<size_t> m_readIndex;   ///< The read index for the circular buffer.
-  std::atomic<size_t> m_writeIndex;  ///< The write index for the circular buffer.
+  const size_t m_capacity;            ///< The size of the circular buffer.
+  std::vector<T> m_buffer;            ///< The buffer storing the items.
+  std::atomic<size_t> m_readIndex;    ///< The read index for the circular buffer.
+  std::atomic<size_t> m_writeIndex;   ///< The write index for the circular buffer.
 
  public:
   /**
@@ -150,9 +150,7 @@ class CircularBufferLF {
    *
    * @return The capacity of the circular buffer.
    */
-  size_t capacity() const {
-    return m_capacity;
-  }
+  [[nodiscard]] size_t capacity() const { return m_capacity; }
 
   /**
    * @brief Returns the number of items currently in the circular buffer.
@@ -163,7 +161,7 @@ class CircularBufferLF {
    *
    * @return The number of items currently in the circular buffer.
    */
-  size_t size() const {
+  [[nodiscard]] size_t size() const {
     auto currentWrite = m_writeIndex.load(std::memory_order_acquire);
     auto currentRead = m_readIndex.load(std::memory_order_acquire);
     return (currentWrite - currentRead + m_capacity) & (m_capacity - 1);
@@ -175,23 +173,19 @@ class CircularBufferLF {
    * @param num The number to find the next power of 2 for.
    * @return The next power of 2 for the given number.
    */
-  size_t nextPowerOf2(size_t num) {
-    if (num == 0) {
+  static size_t nextPowerOf2(size_t num) {
+    if (num == 0)
       return 1;
-    } else if ((num & (num - 1)) == 0) {
-      return num;
-    } else {
-      --num;
-      num |= num >> 1;
-      num |= num >> 2;
-      num |= num >> 4;
-      num |= num >> 8;
-      num |= num >> 16;
+    --num;
+    num |= num >> 1;
+    num |= num >> 2;
+    num |= num >> 4;
+    num |= num >> 8;
+    num |= num >> 16;
 #if defined(_WIN64) || defined(__x86_64__) || defined(__ppc64__)
-      num |= num >> 32;
+    num |= num >> 32;
 #endif
-      return num + 1;
-    }
+    return num + 1;
   }
 
   /**
@@ -202,9 +196,7 @@ class CircularBufferLF {
    * @param index The index to be incremented.
    * @return The incremented index within the circular buffer.
    */
-  size_t increment(size_t index) const {
-    return (index + 1) & (m_capacity - 1);
-  }
+  [[nodiscard]] size_t increment(size_t index) const { return (index + 1) & (m_capacity - 1); }
 };
 
-}  // namespace tkcppsl::container
+}   // namespace cppsl::container

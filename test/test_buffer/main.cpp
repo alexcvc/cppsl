@@ -1,223 +1,117 @@
-#include <cppsl/buffer/cyclicBuffer.hpp>
-#include <cppsl/buffer/ringBuffer.hpp>
-#include <cstring>
-#include <thread>
-#include "gtest/gtest.h"
+#define CATCH_CONFIG_MAIN
+#include <catch2/catch.hpp>
+#include <cppsl/container/circularBuffer.hpp>
 
-namespace param {
-size_t initialCapacity = 1024;
-size_t messageCount = 100;
-size_t meassageSize = 100;
-size_t numTries = 1000;
-double messageTimeout = 5.0;
-}   // namespace param
+TEST_CASE("CircularBufferLF with int", "[CircularBufferLF]") {
+  cppsl::container::CircularBufferLF<int> buffer(8);
 
-std::atomic_int diff_message{0};
-uint32_t number_sent{0};
-uint32_t number_recv{0};
+  REQUIRE(buffer.empty());
+  REQUIRE(buffer.capacity() == 8);
 
-struct BaseTestCase {
-  BaseTestCase(std::string name) : m_name{std::move(name)} {}
-  virtual ~BaseTestCase() = default;
-  virtual void perform() = 0;
-  const std::string m_name;
-};
+  buffer.push(1);
+  buffer.push(2);
+  buffer.push(3);
 
-template <class RB>
-struct TheTestCase : public BaseTestCase {
-  TheTestCase(std::string name) : BaseTestCase{std::move(name)} {}
-  void perform() override;
-};
+  REQUIRE(buffer.size() == 3);
+  REQUIRE(!buffer.empty());
 
-template <class TypeOfBuffer>
-void TheTestCase<TypeOfBuffer>::perform() {
-  //  std::printf(">>> test case start: %s <<<\n", m_name.c_str());
-
-  TypeOfBuffer buffer{param::initialCapacity};
-
-  if (param::meassageSize < sizeof(size_t)) {
-    std::printf("message too small (need at least %lu bytes)\n", (unsigned long)sizeof(size_t));
-    std::terminate();
-  }
-
-  /*
-   * PROVIDER
-   */
-  auto thread_provider = [&buffer]() {
-    const size_t message_size = param::meassageSize;
-    const size_t message_count = param::messageCount;
-    std::unique_ptr<uint8_t[]> message_buffer(new uint8_t[message_size]);
-
-    //    std::printf("-->> begin send\n");
-
-    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-    std::chrono::steady_clock::time_point time_of_warning;
-    bool is_first_warning = true;
-
-    for (size_t i = 0; i < message_count;) {
-      std::memcpy(message_buffer.get(), &i, sizeof(size_t));
-      size_t oldcap = buffer.capacity();
-      if (!buffer.put(message_buffer.get(), message_size)) {
-        if (TypeOfBuffer::can_extend()) {
-          std::printf("-->> buffer did not extend\n");   // must never happen
-          std::terminate();
-        } else {
-          std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
-          double elapsed = std::chrono::duration<double>(now - start).count();
-          if (is_first_warning || std::chrono::duration<double>(now - time_of_warning).count() > 1) {
-            //            std::printf("-->> message not sent yet (%zu)...\n", i);
-            time_of_warning = now;
-            is_first_warning = false;
-          }
-          if (elapsed > param::messageTimeout) {
-            std::printf("-->> message sending timeout\n");
-            std::terminate();
-          }
-        }
-      } else {
-        ++diff_message;
-        number_sent++;
-
-        size_t newcap = buffer.capacity();
-        if (oldcap != newcap) {
-          std::printf("-->> growth (%zu -> %zu)\n", oldcap, newcap);
-        }
-        ++i;
-        start = std::chrono::steady_clock::now();
-        is_first_warning = true;
-      }
-    }
-
-    //    std::printf("-->> sent (%zu)\n", message_count);
-  };
-
-  /*
-   * CONSUMER
-   */
-  auto thread_consumer = [&buffer]() {
-    const size_t message_size = param::meassageSize;
-    const size_t message_count = param::messageCount;
-    std::unique_ptr<uint8_t[]> message_buffer(new uint8_t[message_size]);
-
-    //    std::printf("--<< begin receive\n");
-
-    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-    std::chrono::steady_clock::time_point time_of_warning;
-    bool is_first_warning = true;
-
-    for (size_t i = 0; i < message_count;) {
-      if (!buffer.get(message_buffer.get(), message_size)) {
-        std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
-        double elapsed = std::chrono::duration<double>(now - start).count();
-        if (is_first_warning || std::chrono::duration<double>(now - time_of_warning).count() > 1) {
-          //          std::printf("--<< message not arrived yet (%zu)...\n", i);
-          time_of_warning = now;
-          is_first_warning = false;
-        }
-        if (elapsed > param::messageTimeout) {
-          std::printf("--<< message receiving timeout\n");
-          std::terminate();
-        }
-      } else {
-        diff_message--;
-        number_recv++;
-
-        size_t msg;
-        std::memcpy(&msg, message_buffer.get(), sizeof(size_t));
-        if (msg != i) {
-          std::printf("--<< message (%zu) != expected (%zu)\n", msg, i);
-          std::terminate();
-        }
-        ++i;
-        start = std::chrono::steady_clock::now();
-        is_first_warning = true;
-      }
-    }
-
-    //    std::printf("--<< received (%zu)\n", message_count);
-  };
-
-  for (size_t i = 0; i < param::numTries; ++i) {
-    diff_message = 0;
-
-    //    std::printf("---------------- %4zu/%4zu ----------------\n", i + 1, param::numTries);
-    std::thread t1(thread_provider);
-    std::thread t2(thread_consumer);
-    t1.join();
-    t2.join();
-
-    EXPECT_EQ(number_recv, number_sent);
-    EXPECT_EQ(diff_message, 0);
-  }
-  //  std::printf("-------------------------------------------\n");
-  //  std::printf("success!\n");
-
-  //  std::printf("<<< TestCase end: %s >>>\n", m_name.c_str());
+  int item;
+  REQUIRE(buffer.pop(item));
+  REQUIRE(item == 1);
+  REQUIRE(buffer.pop(item));
+  REQUIRE(item == 2);
+  REQUIRE(buffer.pop(item));
+  REQUIRE(item == 3);
+  REQUIRE(buffer.empty());
 }
 
-TEST(TestBuffer, TestRing_Buffer) {   // 12/2/2020 -> 737761
-  std::unique_ptr<BaseTestCase> test;
-  test.reset(new TheTestCase<Ring_Buffer>{"Hard"});
-  test->perform();
+TEST_CASE("CircularBufferLF with std::string", "[CircularBufferLF]") {
+  cppsl::container::CircularBufferLF<std::string> buffer(4);
+
+  REQUIRE(buffer.empty());
+  REQUIRE(buffer.capacity() == 4);
+
+  buffer.push("one");
+  buffer.push("two");
+  buffer.push("three");
+
+  REQUIRE(buffer.size() == 3);
+  REQUIRE(!buffer.empty());
+
+  std::string item;
+  REQUIRE(buffer.pop(item));
+  REQUIRE(item == "one");
+  REQUIRE(buffer.pop(item));
+  REQUIRE(item == "two");
+  REQUIRE(buffer.pop(item));
+  REQUIRE(item == "three");
+  REQUIRE(buffer.empty());
 }
 
-TEST(TestBuffer, TestSoft_Ring_Buffer) {   // 12/2/2020 -> 737761
-  std::unique_ptr<BaseTestCase> test;
-  test.reset(new TheTestCase<Soft_Ring_Buffer>{"Soft"});
-  test->perform();
-}
-
-//----------------------------------------------------------------------------
-// CycleBuffer
-//----------------------------------------------------------------------------
-
-template <class RB>
-struct TheTestCycleBuffer : public BaseTestCase {
-  TheTestCycleBuffer(std::string name) : BaseTestCase{std::move(name)} {}
-  void perform() override;
-};
-
-TEST(TestBuffer, TestCycleBuffer) {   // 12/2/2020 -> 737761
-
-  struct Message {
+TEST_CASE("CircularBufferLF with custom struct", "[CircularBufferLF]") {
+  struct CustomStruct {
     int id;
-    std::array<uint8_t,  100> data;
+    std::string name;
   };
 
-  cppsl::buffer::CyclicBuffer<Message, 32> buffer;
+  cppsl::container::CircularBufferLF<CustomStruct> buffer(4);
 
-  /*
-   * PROVIDER
-   */
-  auto thread_provider = [&buffer]() {
+  REQUIRE(buffer.empty());
+  REQUIRE(buffer.capacity() == 4);
 
-    for (size_t i = 0; i < param::messageCount;) {
-      Message msg;
-      msg.id = i;
-      msg.data.fill(i);
+  buffer.push({1, "Alice"});
+  buffer.push({2, "Bob"});
+  buffer.push({3, "Charlie"});
+  buffer.push({4, "Sahra"});
 
-      if (!buffer.Insert(&msg)) {
-      } else {
-      }
-    }
+  REQUIRE(buffer.size() == 3);
+  REQUIRE(!buffer.empty());
+
+  CustomStruct item;
+  REQUIRE(buffer.pop(item));
+  REQUIRE(item.id == 1);
+  REQUIRE(item.name == "Alice");
+  REQUIRE(buffer.pop(item));
+  REQUIRE(item.id == 2);
+  REQUIRE(item.name == "Bob");
+  REQUIRE(buffer.pop(item));
+  REQUIRE(item.id == 3);
+  REQUIRE(item.name == "Charlie");
+  REQUIRE(buffer.empty());
+}
+
+TEST_CASE("CircularBufferLF with custom struct preemptive", "[CircularBufferLFPreemptive]") {
+  struct CustomStruct {
+    int id;
+    std::string name;
   };
 
-  /*
-   * CONSUMER
-   */
-  auto thread_consumer = [&buffer]() {
-  };
+  cppsl::container::CircularBufferLF<CustomStruct> buffer(4);
 
-  for (size_t i = 0; i < param::numTries; ++i) {
-    diff_message = 0;
+  REQUIRE(buffer.empty());
+  REQUIRE(buffer.capacity() == 4);
 
-    //    std::printf("---------------- %4zu/%4zu ----------------\n", i + 1, param::numTries);
-    std::thread t1(thread_provider);
-    std::thread t2(thread_consumer);
-    t1.join();
-    t2.join();
-
-    EXPECT_EQ(number_recv, number_sent);
-    EXPECT_EQ(diff_message, 0);
+  buffer.push({1, "Alice"});
+  buffer.push({2, "Bob"});
+  buffer.push({3, "Charlie"});
+  if (!buffer.push({4, "Sahra"})) {
+    CustomStruct ret;
+    buffer.pop(ret);
+    buffer.push({4, "Sahra"});
   }
+
+  REQUIRE(buffer.size() == 3);
+  REQUIRE(!buffer.empty());
+
+  CustomStruct item;
+  REQUIRE(buffer.pop(item));
+  REQUIRE(item.id == 2);
+  REQUIRE(item.name == "Bob");
+  REQUIRE(buffer.pop(item));
+  REQUIRE(item.id == 3);
+  REQUIRE(item.name == "Charlie");
+  REQUIRE(buffer.pop(item));
+  REQUIRE(item.id == 4);
+  REQUIRE(item.name == "Sahra");
+  REQUIRE(buffer.empty());
 }

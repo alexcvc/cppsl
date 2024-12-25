@@ -6,24 +6,24 @@
 // For more information, please refer to <https://unlicense.org>
 
 #include <bit>
-#include <iostream>
-#include <iomanip>
 #include <cppsl/byteSwap.hpp>
+#include <iomanip>
+#include <iostream>
 
 using namespace cppsl;
 
-/*************************************************************************//**
+/*************************************************************************/ /**
  * dump
  * @tparam T
  * @param v
  * @param term
  */
-template<typename T>
+template <typename T>
 void dump(T v, char term = '\n') {
   // ensure we're only swapping integral types
   static_assert(std::is_arithmetic<T>::value, "only arithmetic types may be dumped");
 
-  auto *bytePtr = (uint8_t *)&v;
+  auto* bytePtr = (uint8_t*)&v;
 
   std::cout << std::hex << std::uppercase << std::setfill('0') << std::setw(sizeof(T) * 2) << v << " : ";
 
@@ -34,7 +34,7 @@ void dump(T v, char term = '\n') {
   std::cout << std::dec << term;
 }
 
-/*************************************************************************//**
+/*************************************************************************/ /**
  * main
  * @return
  */
@@ -42,7 +42,7 @@ int main() {
   std::cout << "ByteSwapper for U8:\n";
   uint8_t i = 0xAB;
   dump(i);
-  dump(cppsl::ByteSwapper::Swap<std::endian::little, std::endian::big>(i));
+  dump(cppsl::ByteSwapper<uint8_t> Swap<std::endian::little, std::endian::big>(i));
   dump(cppsl::ByteSwapper(i));
 
   std::cout << "\nByteSwapper for U16:\n";

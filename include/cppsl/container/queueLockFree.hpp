@@ -14,8 +14,7 @@
  * \ingroup
  *****************************************************************************/
 
-#ifndef INCLUDE_CPPSL_CONTAINER_QUEUE_LOCKFREE_H
-#define INCLUDE_CPPSL_CONTAINER_QUEUE_LOCKFREE_H
+#pragma once
 
 //-----------------------------------------------------------------------------
 // Includes
@@ -191,5 +190,3 @@ class QueueLockFree {
 };
 
 }   //namespace cppsl::container
-
-#endif /* INCLUDE_CPPSL_CONTAINER_QUEUE_LOCKFREE_H */
