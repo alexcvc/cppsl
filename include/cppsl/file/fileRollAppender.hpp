@@ -14,23 +14,12 @@
  * \ingroup C++ support library
  *****************************************************************************/
 
-#ifndef INCLUDE_CPPSL_FILE_FILE_ROLL_APPENDER_HPP
-#define INCLUDE_CPPSL_FILE_FILE_ROLL_APPENDER_HPP
+#pragma once
 
 //-----------------------------------------------------------------------------
 // includes <...>
 //-----------------------------------------------------------------------------
-#include <stdarg.h>
 #include <cppsl/file/fileBaseAppender.hpp>
-#include <cppsl/log/baseLogAppender.hpp>
-
-//----------------------------------------------------------------------------
-// Public defines and macros
-//----------------------------------------------------------------------------
-
-//----------------------------------------------------------------------------
-// Public typedefs, structs, enums, unions and variables
-//----------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------
 // Public Function Prototypes
@@ -49,12 +38,11 @@ static const size_t maxRollFileAppenderBackIndex = 10;           ///< max size o
 
 class FileRollAppender : public FileBaseAppender {
  public:
-  FileRollAppender(cppsl::log::log_appenderPtr logPtr, const std::filesystem::path& filePath,
-                   size_t maxFileSize = maxRollFileAppenderSize, uint maxBackupIndex = maxRollFileAppenderBackIndex,
-                   bool append = true, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+  FileRollAppender(const std::filesystem::path& filePath, size_t maxFileSize = maxRollFileAppenderSize,
+                   uint maxBackupIndex = maxRollFileAppenderBackIndex, bool append = true,
+                   std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
 
-  FileRollAppender(log::log_appenderPtr& logPtr, const std::filesystem::path& filePath, bool append,
-                   std::ios_base::openmode mode);
+  FileRollAppender(const std::filesystem::path& filePath, bool append, std::ios_base::openmode mode);
 
   /**
    * sets the maximum number of backup files that can be created for a particular log file.
@@ -101,5 +89,3 @@ class FileRollAppender : public FileBaseAppender {
   size_t m_maxFileSize;             ///< represents the maximum file size allowed.
 };
 }   // end namespace cppsl::file
-
-#endif /* INCLUDE_CPPSL_FILE_FILE_ROLL_APPENDER_HPP */

@@ -19,27 +19,28 @@
 #include <iomanip>
 #include <iostream>
 
+#include "spdlog/spdlog.h"
+
 using namespace std;
 using namespace cppsl;
 using namespace cppsl::file;
 
-FileRollAppender::FileRollAppender(log::log_appenderPtr &logPtr, const filesystem::path &filePath, bool append,
-                                   ios_base::openmode mode)
-   : FileBaseAppender(logPtr, filePath, append, mode),
-     m_maxBackupIndex(maxRollFileAppenderBackIndex > 0 ? maxRollFileAppenderBackIndex : 1),
-     m_maxBackupIndexWidth((m_maxBackupIndex > 0) ? (unsigned short) log10((float) m_maxBackupIndex) + 1 : 1),
-     m_maxFileSize(maxRollFileAppenderSize) {}
+FileRollAppender::FileRollAppender(const filesystem::path& filePath, bool append, ios_base::openmode mode)
+    : FileBaseAppender(filePath, append, mode),
+      m_maxBackupIndex(maxRollFileAppenderBackIndex > 0 ? maxRollFileAppenderBackIndex : 1),
+      m_maxBackupIndexWidth((m_maxBackupIndex > 0) ? (unsigned short)log10((float)m_maxBackupIndex) + 1 : 1),
+      m_maxFileSize(maxRollFileAppenderSize) {}
 
-FileRollAppender::FileRollAppender(cppsl::log::log_appenderPtr logPtr, const std::filesystem::path &filePath,
-                                   size_t maxFileSize, uint maxBackupIndex, bool append, std::ios_base::openmode mode)
-   : FileBaseAppender(logPtr, filePath, append, mode),
-     m_maxBackupIndex(maxBackupIndex > 0 ? maxBackupIndex : 1),
-     m_maxBackupIndexWidth((m_maxBackupIndex > 0) ? (unsigned short) log10((float) m_maxBackupIndex) + 1 : 1),
-     m_maxFileSize(maxFileSize) {}
+FileRollAppender::FileRollAppender(const std::filesystem::path& filePath, size_t maxFileSize, uint maxBackupIndex,
+                                   bool append, std::ios_base::openmode mode)
+    : FileBaseAppender(filePath, append, mode),
+      m_maxBackupIndex(maxBackupIndex > 0 ? maxBackupIndex : 1),
+      m_maxBackupIndexWidth((m_maxBackupIndex > 0) ? (unsigned short)log10((float)m_maxBackupIndex) + 1 : 1),
+      m_maxFileSize(maxFileSize) {}
 
 void FileRollAppender::setMaxBackupIndex(unsigned int maxBackups) {
   m_maxBackupIndex = maxBackups;
-  m_maxBackupIndexWidth = (m_maxBackupIndex > 0) ? (unsigned short) log10((float) m_maxBackupIndex) + 1 : 1;
+  m_maxBackupIndexWidth = (m_maxBackupIndex > 0) ? (unsigned short)log10((float)m_maxBackupIndex) + 1 : 1;
 }
 
 unsigned int FileRollAppender::getMaxBackupIndex() const {
@@ -90,7 +91,7 @@ void FileRollAppender::rollOver() {
     try {
       std::ofstream{m_filePath.string()};
     } catch (...) {
-      m_logPtr->error("create file {} failed", m_filePath.string());
+      spdlog::error("create file {} failed", m_filePath.string());
     }
   }
 
@@ -103,7 +104,7 @@ bool FileRollAppender::writeMessage(std::string_view message) {
   if (res) {
     off_t offset = m_fs.tellg();
     if (offset < 0) {
-      m_logPtr->error("append new event to log failed");
+      spdlog::error("append new event to log failed");
     } else {
       if (static_cast<size_t>(offset) >= m_maxFileSize) {
         rollOver();

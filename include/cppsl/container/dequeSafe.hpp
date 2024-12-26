@@ -148,11 +148,6 @@ class DequeSafe {
 
   /**
   * @brief Attempts to pop the last element from the deque if it is not empty.
-  *
-  * This function acquires a lock on the semaphore and checks if the deque is empty.
-  * If it is not empty, it pops the last element from the deque and assigns it to the given value.
-  * If the deque is empty, it returns false.
-  *
   * @tparam T The type of elements stored in the deque.
   * @param value A reference to store the popped element.
   * @return True if an element was successfully popped, false otherwise.
@@ -212,9 +207,6 @@ class DequeSafe {
 
   /**
    * @brief Check if the container is empty.
-   *
-   * The empty function acquires a lock on the semaphore and checks if the container is empty.
-   *
    * @return True if the container is empty, False otherwise.
    */
   bool empty() const {
@@ -224,9 +216,6 @@ class DequeSafe {
 
   /**
    * @brief Returns the size of the container.
-   *
-   * The size function acquires a lock on the semaphore and returns the current size of the container.
-   *
    * @return The size of the container.
    */
   size_t size() const {

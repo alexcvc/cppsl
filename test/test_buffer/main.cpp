@@ -2,8 +2,8 @@
 #include <catch2/catch.hpp>
 #include <cppsl/container/circularBuffer.hpp>
 
-TEST_CASE("CircularBufferLF with int", "[CircularBufferLF]") {
-  cppsl::container::CircularBufferLF<int> buffer(8);
+TEST_CASE("CircularBuffer with int", "[CircularBuffer]") {
+  cppsl::container::CircularBuffer<int> buffer(8);
 
   REQUIRE(buffer.empty());
   REQUIRE(buffer.capacity() == 8);
@@ -25,8 +25,8 @@ TEST_CASE("CircularBufferLF with int", "[CircularBufferLF]") {
   REQUIRE(buffer.empty());
 }
 
-TEST_CASE("CircularBufferLF with std::string", "[CircularBufferLF]") {
-  cppsl::container::CircularBufferLF<std::string> buffer(4);
+TEST_CASE("CircularBuffer with std::string", "[CircularBuffer]") {
+  cppsl::container::CircularBuffer<std::string> buffer(4);
 
   REQUIRE(buffer.empty());
   REQUIRE(buffer.capacity() == 4);
@@ -48,13 +48,13 @@ TEST_CASE("CircularBufferLF with std::string", "[CircularBufferLF]") {
   REQUIRE(buffer.empty());
 }
 
-TEST_CASE("CircularBufferLF with custom struct", "[CircularBufferLF]") {
+TEST_CASE("CircularBuffer with custom struct", "[CircularBuffer]") {
   struct CustomStruct {
     int id;
     std::string name;
   };
 
-  cppsl::container::CircularBufferLF<CustomStruct> buffer(4);
+  cppsl::container::CircularBuffer<CustomStruct> buffer(4);
 
   REQUIRE(buffer.empty());
   REQUIRE(buffer.capacity() == 4);
@@ -80,13 +80,13 @@ TEST_CASE("CircularBufferLF with custom struct", "[CircularBufferLF]") {
   REQUIRE(buffer.empty());
 }
 
-TEST_CASE("CircularBufferLF with custom struct preemptive", "[CircularBufferLFPreemptive]") {
+TEST_CASE("CircularBuffer with custom struct preemptive", "[CircularBufferLFPreemptive]") {
   struct CustomStruct {
     int id;
     std::string name;
   };
 
-  cppsl::container::CircularBufferLF<CustomStruct> buffer(4);
+  cppsl::container::CircularBuffer<CustomStruct> buffer(4);
 
   REQUIRE(buffer.empty());
   REQUIRE(buffer.capacity() == 4);

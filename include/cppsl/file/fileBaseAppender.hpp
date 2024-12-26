@@ -35,20 +35,13 @@
  * \ingroup
  *****************************************************************************/
 
-#ifndef INCLUDE_CPPSL_FILE_FILE_BASE_APPENDER_HPP
-#define INCLUDE_CPPSL_FILE_FILE_BASE_APPENDER_HPP
+#pragma once
 
 //-----------------------------------------------------------------------------
 // includes <...>
 //-----------------------------------------------------------------------------
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <cppsl/log/baseLogAppender.hpp>
 #include <filesystem>
 #include <fstream>
-#include <string>
 
 //----------------------------------------------------------------------------
 // Public defines and macros
@@ -64,74 +57,71 @@
 
 namespace cppsl::file {
 
-  /// @brief File Appender
-  class FileBaseAppender : public cppsl::log::BaseLogAppender {
-   public:
-    /** The  `FileBaseAppender`  constructor takes the following parameters:
-     * @param `logPtr` : A shared pointer to a log appender.
-     * @param  `filePath` : The path to the file to which the  `FileBaseAppender` will log.
-     * @param  `append` : A boolean flag indicating whether to append to an existing
-     * file ( `true` ) or truncate it ( `false` ). It is optional and defaults to `true` .
-     * @param  `mode` : The file open mode, specified using  `std::ios_base::openmode`.
-     * It is optional and defaults to  `std::ios_base::in | std::ios_base::out` , which
-     * means the file will be opened for both input and output operations.
-     *
-     * Note: The code you provided is incomplete, so it's possible that there might
-     * be more details or functionality related to the  `FileBaseAppender` class
-     * that are not included here.
-     */
-    FileBaseAppender(cppsl::log::log_appenderPtr logPtr, const std::filesystem::path& filePath, bool append = true,
-                     std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+/// @brief File Appender
+class FileBaseAppender {
+ public:
+  /** The  `FileBaseAppender`  constructor takes the following parameters:
+   * @param  `filePath` : The path to the file to which the  `FileBaseAppender` will log.
+   * @param  `append` : A boolean flag indicating whether to append to an existing
+   * file ( `true` ) or truncate it ( `false` ). It is optional and defaults to `true` .
+   * @param  `mode` : The file open mode, specified using  `std::ios_base::openmode`.
+   * It is optional and defaults to  `std::ios_base::in | std::ios_base::out` , which
+   * means the file will be opened for both input and output operations.
+   *
+   * Note: The code you provided is incomplete, so it's possible that there might
+   * be more details or functionality related to the  `FileBaseAppender` class
+   * that are not included here.
+   */
+  FileBaseAppender(const std::filesystem::path& filePath, bool append = true,
+                   std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
 
-    virtual ~FileBaseAppender() = default;
+  virtual ~FileBaseAppender() = default;
 
-    /// get file path
-    [[nodiscard]] const std::filesystem::path& getFilePath() const { return m_filePath; }
+  /// get file path
+  [[nodiscard]] const std::filesystem::path& getFilePath() const { return m_filePath; }
 
-    /// \brief returns a boolean value indicating whether a file stream ( m_fs ) is open or not.
-    /// \return true if opened, otherwise - false
-    [[nodiscard]] bool isOpen() const { return m_fs.is_open(); }
+  /// \brief returns a boolean value indicating whether a file stream ( m_fs ) is open or not.
+  /// \return true if opened, otherwise - false
+  [[nodiscard]] bool isOpen() const { return m_fs.is_open(); }
 
-    /// Reopens the logfile.
-    /// This can be useful for logfiles that are rotated externally,
-    /// e.g. by logrotate. This method is a NOOP for FileAppenders that
-    /// have been constructed with a file descriptor.
-    /// \return true if the reopen succeeded, otherwise - false
-    [[nodiscard]] virtual bool reopenFile();
+  /// Reopens the logfile.
+  /// This can be useful for logfiles that are rotated externally,
+  /// e.g. by logrotate. This method is a NOOP for FileAppenders that
+  /// have been constructed with a file descriptor.
+  /// \return true if the reopen succeeded, otherwise - false
+  [[nodiscard]] virtual bool reopenFile();
 
-    /// Closes the logfile.
-    void closeFile();
+  /// Closes the logfile.
+  void closeFile();
 
-    /// Sets the append vs truncate flag.
-    /// NB. currently the base_file_appender opens the logfile in the constructor.
-    /// Therefore this method is too late to influence the first file opening.
-    /// \param append false to truncate, true to append
-    virtual void setAppend(bool append);
+  /// Sets the append vs truncate flag.
+  /// NB. currently the base_file_appender opens the logfile in the constructor.
+  /// Therefore this method is too late to influence the first file opening.
+  /// \param append false to truncate, true to append
+  virtual void setAppend(bool append);
 
-    /// Gets the value of the 'append' option.
-    /// \return true if successfully, otherwise - false
-    [[nodiscard]] virtual bool getAppend() const;
+  /// Gets the value of the 'append' option.
+  /// \return true if successfully, otherwise - false
+  [[nodiscard]] virtual bool getAppend() const;
 
-    /// Sets the file open mode.
-    /// \param mode file mode.
-    virtual void setMode(std::ios_base::openmode mode);
+  /// Sets the file open mode.
+  /// \param mode file mode.
+  virtual void setMode(std::ios_base::openmode mode);
 
-    /// Gets the file open mode.
-    [[nodiscard]] virtual std::ios_base::openmode getMode() const;
+  /// Gets the file open mode.
+  [[nodiscard]] virtual std::ios_base::openmode getMode() const;
 
-    /// virtual member function takes a string_view ( message ) as
-    /// a parameter and returns a boolean value.
-    /// The purpose of this function is to write a message to a file.
-    /// \param message message
-    /// \return true if successfully, otherwise - false
-    [[nodiscard]] virtual bool writeMessage(std::string_view message);
+  /// virtual member function takes a string_view ( message ) as
+  /// a parameter and returns a boolean value.
+  /// The purpose of this function is to write a message to a file.
+  /// \param message message
+  /// \return true if successfully, otherwise - false
+  [[nodiscard]] virtual bool writeMessage(std::string_view message);
 
-   protected:
-    std::filesystem::path m_filePath;                                         ///< log file path
-    std::fstream m_fs;                                                        ///< file stream
-    std::ios_base::openmode m_mode{std::ios_base::in | std::ios_base::out};   ///< mode
-  };
+ protected:
+  std::filesystem::path m_filePath;                                         ///< log file path
+  std::fstream m_fs;                                                        ///< file stream
+  std::ios_base::openmode m_mode{std::ios_base::in | std::ios_base::out};   ///< mode
+};
 
-}  // end namespace cppsl::file
-
-#endif /* INCLUDE_CPPSL_FILE_FILE_BASE_APPENDER_HPP */
+}   // end namespace cppsl::file

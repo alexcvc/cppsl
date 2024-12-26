@@ -9,7 +9,6 @@ project(cppsl_lib
 ### Options
 option(BUILD_SHARED_LIBS "Build libraries as shared as opposed to static" ON)
 option(BUILD_TESTING "Build tests" OFF)
-option(BUILD_EXAMPLES "Build examples" OFF)
 option(BUILD_DOC "Build doxygen documentation" OFF)
 
 # Defines the CMAKE_INSTALL_LIBDIR, CMAKE_INSTALL_BINDIR and many other useful macros.
@@ -61,11 +60,6 @@ add_subdirectory(submodules)
 
 ### Compile- and install-related commands.
 add_subdirectory(src)
-
-# add examples
-if (BUILD_EXAMPLES)
-   add_subdirectory(examples)
-endif ()
 
 # Add tests
 if (BUILD_TESTING)

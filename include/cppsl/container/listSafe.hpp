@@ -67,10 +67,6 @@ class ListSafe {
   /**
    * @class ListSafe
    * @brief Thread-safe linked list class
-   *
-   * This class is designed to provide a thread-safe linked list that can be accessed concurrently by multiple threads.
-   * It uses locks to ensure that only one thread can modify the list at a time, preventing race conditions.
-   *
    * @tparam T The type of elements in the list
    */
   void clean() {
@@ -80,10 +76,6 @@ class ListSafe {
   /**
    * @class ListSafe
    * @brief Thread-safe linked list class
-   *
-   * This class is designed to provide a thread-safe linked list that can be accessed concurrently by multiple threads.
-   * It uses locks to ensure that only one thread can modify the list at a time, preventing race conditions.
-   *
    * @param T The type of elements in the list
    */
   void push_front(T const& value) {
@@ -95,13 +87,8 @@ class ListSafe {
   }
 
   /**
-     * @file ListSafe.hpp
-     *
-     * @brief This file contains the implementation of a thread-safe linked list class.
-     *
-     * This class is designed to provide a thread-safe linked list that can be accessed concurrently by multiple threads.
-     * It uses locks to ensure that only one thread can modify the list at a time, preventing race conditions.
-     */
+   * @brief This file contains the implementation of a thread-safe linked list class.
+   */
   template <typename Function>
   void for_each(Function f) {
     node* current = &head;
@@ -117,12 +104,7 @@ class ListSafe {
   }
 
   /**
-   * @file ListSafe.hpp
-   *
    * @brief This file contains the implementation of a thread-safe linked list class.
-   *
-   * This class is designed to provide a thread-safe linked list that can be accessed concurrently by multiple threads.
-   * It uses locks to ensure that only one thread can modify the list at a time, preventing race conditions.
    */
   template <typename Predicate>
   std::shared_ptr<T> find_first_if(Predicate p) {
@@ -142,13 +124,7 @@ class ListSafe {
   }
 
   /**
-    * @file ListSafe.hpp
-    *
     * @brief This file contains the implementation of a thread-safe linked list class.
-    *
-    * This class is designed to provide a thread-safe linked list that can be accessed concurrently by multiple threads.
-    * It uses locks to ensure that only one thread can modify the list at a time, preventing race conditions.
-    *
     */
   template <typename Predicate>
   void remove_if(Predicate p) {

@@ -18,14 +18,16 @@
 #include <stop_token>
 #include <string>
 #include <thread>
-#include <stop_token>
 
 using namespace std::chrono_literals;
 
 //-----------------------------------------------------------------------------
 // local Defines and Macros
 //-----------------------------------------------------------------------------
-
+struct Event {
+  std::condition_variable event_condition;
+  std::mutex event_mutex;
+};
 
 /**
 * @brief   initializes and run stuff.
@@ -33,8 +35,9 @@ using namespace std::chrono_literals;
 */
 int main(int argc, char** argv) {
   // configuration
-  std::stop_source stop_src;  // Create a stop source
-  std::array<std::thread, numberTasks> task_workers;
+  std::stop_source stop_src;   // Create a stop source
+  std::array<std::thread, 16> task_workers;
+  std::array<Event, 16> task_events;
 
   //----------------------------------------------------------
   // go to idle in main
@@ -44,48 +47,30 @@ int main(int argc, char** argv) {
     std::cout << "Start Task=" << i << std::endl;
 
     task_workers[i] = std::move(std::thread(
-        [](int number, std::stop_token token) {
-          std::cout << "Task " << std::to_string(number) << std::endl;
+       [&](int number, std::stop_token token) {
+         std::cout << "Task " << std::to_string(number) << std::endl;
 
-          // Register a stop callback
-          std::stop_callback stop_cb(token, [&]() {
-            // Wake thread on stop request
-            task_events[number].event_condition.notify_all();
-          });
+         // Register a stop callback
+         std::stop_callback stop_cb(token, [&]() {
+           // Wake thread on stop request
+           task_events[number].event_condition.notify_all();
+         });
 
-          while (true) {
-            {
-              // Start of locked block
-              std::unique_lock lck(task_events[number].event_mutex);
-              task_events[number].event_condition.wait_for(lck, 2s);
-            }
-            // Stop if requested to stop
-            if (token.stop_requested()) {
-              break;
-            }
-          }  // End of while loop
-        },
-        i, stop_src.get_token()));
+         while (true) {
+           {
+             // Start of locked block
+             std::unique_lock lck(task_events[number].event_mutex);
+             task_events[number].event_condition.wait_for(lck, 2s);
+           }
+           // Stop if requested to stop
+           if (token.stop_requested()) {
+             break;
+           }
+         }   // End of while loop
+       },
+       i, stop_src.get_token()));
 
     std::this_thread::sleep_for(10ms);
-  }
-
-  //----------------------------------------------------------
-  // Start application stuff
-  //----------------------------------------------------------
-  // main loop or sleep
-  while (true) {
-    std::string cmd;
-    std::cout << "\nInput command (q - exit, h - help):" << std::endl;
-    std::cin >> cmd;
-
-    if (cmd.compare(0, 1, "q") == 0) {
-      std::cout << "close all and quit .." << std::endl;
-      break;
-    } else if (cmd.starts_with("h")) {
-      std::cout << "h     - help" << std::endl;
-      std::cout << "q     - exit" << std::endl;
-    }
   }
 
   // set token to stop all worker
