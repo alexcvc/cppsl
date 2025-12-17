@@ -3,14 +3,15 @@
 Another C++ support library.
 ============================
 
-This is a C++ implementation based on the previous support libraries in power automation projects, IEC61850 MMS, SV, GOOSE simulations and adapted for C++20. The libraries have been refactored. 
-All classes currently supported by the C++ standard library have been removed. Other improvements such as tests and the cmake project have also been added.
-The library contains classes that can be used starting with C++20 that are not currently supported by the existing ARM compilers. 
+This C++ implementation is based on previous support libraries for Power Automation Projects and IEC 61850 MMS, SV and GOOSE simulations, and has been adapted for the latest editions of C++. 
+The libraries have undergone extensive refactoring and reworking. 
+All classes currently supported by the C++ standard library have been removed. Other improvements, such as tests and the CMake project, have also been added.
+The library contains classes that can be used with C++20 and that are not currently supported by existing ARM compilers. 
 
 
 ## C++ Version
 
-Base compiler version is C++20. All tests will be created with respect on gcc compiler.
+The base compiler version is C++20, and all tests will be created with the gcc compiler in mind.
 
 ## Use in Targets Raspberry PI4 and BeagleBoard X15, BeagleBoard AI/AI64
 
